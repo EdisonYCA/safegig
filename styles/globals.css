@@ -10,6 +10,13 @@
   --color-ut-orange: #FF9F1C;
 }
 
+@layer components {
+  .custom-button {
+    @apply w-full rounded-3xl font-bold hover:scale-105 duration-300;
+  }
+
+}
+
 body {
   background-color: var(--background);
   color: white;
