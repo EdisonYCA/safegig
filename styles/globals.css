@@ -8,6 +8,9 @@
 @theme {
   --color-sky-blue: var(--background);
   --color-ut-orange: #FF9F1C;
+  --color-prussian-blue: #003049;
+  --color-selective-yellow: #FFB703;
+  --color-blue-green: #219EBC;
 }
 
 @layer components {
