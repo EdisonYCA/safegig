@@ -12,7 +12,7 @@ const actionBtns = [
     { name: 'FREELANCE JOBS', icon: null, href: '#', css: "w-1/5 bg-sky-blue text-prussian-blue"},
     { name: 'FULL-TIME JOBS', icon: null, href: '#', css: "w-1/5 bg-blue-green text-white "},
     { name: 'CATALOGS', icon: null, href: '#', css: "w-1/5 bg-prussian-blue text-white"},
-    { name: 'POST GIG', icon: null, href: '#', css: "w-1/8 bg-selective-yellow text-prussian-blue"},
+    { name: 'POST GIG', icon: "/48-s-add.svg", href: '#', css: "w-1/8 bg-selective-yellow text-prussian-blue"},
     { name: '', icon: null, href: '#', css: "w-1/12 bg-ut-orange"},
 ]
 
@@ -56,9 +56,17 @@ export default function Dashboard() {
                     {actionBtns.map((btn) => (
                         <a key={btn.name} 
                         href={btn.href}
-                        className={"h-full rounded-md flex items-center justify-center " + btn.css}
+                        className={"h-full rounded-lg flex items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-200 " + btn.css}
                         >
-                            {btn.name}
+                        {btn.icon ?
+                            <Image 
+                            src={btn.icon} 
+                            alt={btn.name} 
+                            width={20} 
+                            height={20}
+                            className="mr-2"
+                        /> : null }
+                        <span>{btn.name}</span>
                         </a>
                     ))}
                 </div>
