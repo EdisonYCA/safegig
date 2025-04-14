@@ -9,11 +9,11 @@ const navigation = [
 ]
 
 const actionBtns = [
-    { name: 'FREELANCE JOBS', icon: null, href: '#', css: "w-1/4 bg-sky-blue text-prussian-blue"},
-    { name: 'FULL-TIME JOBS', icon: null, href: '#', css: "w-1/4 bg-blue-green text-white "},
-    { name: 'CATALOGS', icon: null, href: '#', css: "w-1/4 bg-prussian-blue text-white"},
+    { name: 'FREELANCE JOBS', icon: null, href: '#', css: "w-1/5 bg-sky-blue text-prussian-blue"},
+    { name: 'FULL-TIME JOBS', icon: null, href: '#', css: "w-1/5 bg-blue-green text-white "},
+    { name: 'CATALOGS', icon: null, href: '#', css: "w-1/5 bg-prussian-blue text-white"},
     { name: 'POST GIG', icon: null, href: '#', css: "w-1/8 bg-selective-yellow text-prussian-blue"},
-    { name: '', icon: null, href: '#', css: "w-1/8 bg-ut-orange"},
+    { name: '', icon: null, href: '#', css: "w-1/12 bg-ut-orange"},
 ]
 
 
@@ -52,7 +52,7 @@ export default function Dashboard() {
                 ))}
             </div>
             <div className="bg-white w-full h-full flex flex-col">
-                <div className="w-full h-20 p-2 gap-5 flex">
+                <div className="w-full h-20 p-2 flex justify-evenly">
                     {actionBtns.map((btn) => (
                         <a key={btn.name} 
                         href={btn.href}
