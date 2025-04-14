@@ -8,6 +8,15 @@ const navigation = [
     { name: 'Settings', icon: '/48-home.svg', href: '#', current: false },
 ]
 
+const actionBtns = [
+    { name: 'FREELANCE JOBS', icon: null, href: '#', css: "w-1/4 bg-sky-blue text-prussian-blue"},
+    { name: 'FULL-TIME JOBS', icon: null, href: '#', css: "w-1/4 bg-blue-green text-white "},
+    { name: 'CATALOGS', icon: null, href: '#', css: "w-1/4 bg-prussian-blue text-white"},
+    { name: 'POST GIG', icon: null, href: '#', css: "w-1/8 bg-selective-yellow text-prussian-blue"},
+    { name: '', icon: null, href: '#', css: "w-1/8 bg-ut-orange"},
+]
+
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
@@ -18,7 +27,7 @@ export default function Dashboard() {
         <Navbar />
 
         <div className="h-screen w-screen flex">
-            <div className="h-screen flex flex-col p-5 gap-4">
+            <div className="h-screen flex flex-col p-5 gap-4 bg-gray-300">
                 {navigation.map((item) => (
                     <a
                         key={item.name}
@@ -41,6 +50,18 @@ export default function Dashboard() {
                         <span>{item.name}</span>
                     </a>
                 ))}
+            </div>
+            <div className="bg-white w-full h-full flex flex-col">
+                <div className="w-full h-20 p-2 gap-5 flex">
+                    {actionBtns.map((btn) => (
+                        <a key={btn.name} 
+                        href={btn.href}
+                        className={"h-full rounded-md flex items-center justify-center " + btn.css}
+                        >
+                            {btn.name}
+                        </a>
+                    ))}
+                </div>
             </div>
         </div>
         </>
