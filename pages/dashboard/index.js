@@ -9,11 +9,11 @@ const navigation = [
 ]
 
 const actionBtns = [
-    { name: 'FREELANCE JOBS', icon: null, href: '#', css: "w-[23%] bg-sky-blue text-prussian-blue"},
-    { name: 'FULL-TIME JOBS', icon: null, href: '#', css: "w-[23%] bg-blue-green text-white "},
-    { name: 'CATALOGS', icon: null, href: '#', css: "w-[23%] bg-prussian-blue text-white"},
-    { name: 'POST GIG', icon: "/48-s-add.svg", href: '#', css: "w-[23%] bg-selective-yellow text-prussian-blue"},
-    { name: '', icon: null, href: '#', css: "w-[8%] max-w-0 bg-ut-orange"},
+    { name: 'FREELANCE JOBS', icon: null, href: '#', css: " bg-sky-blue text-prussian-blue"},
+    { name: 'FULL-TIME JOBS', icon: null, href: '#', css: " bg-blue-green text-white "},
+    { name: 'CATALOGS', icon: null, href: '#', css: " bg-prussian-blue text-white"},
+    { name: 'POST GIG', icon: "/48-s-add.svg", href: '#', css: " bg-selective-yellow text-prussian-blue"},
+    { name: '', icon: null, href: '#', css: " bg-ut-orange"},
 ]
 
 const gigBtns = [
@@ -81,31 +81,8 @@ export default function Dashboard() {
         <>
         <Navbar />
 
-        <div className="h-screen w-screen flex">
-            <div className="h-screen flex flex-col p-5 gap-4 bg-gray-300">
-                {navigation.map((item) => (
-                    <a
-                        key={item.name}
-                        href={item.href}
-                        aria-current={item.current ? 'page' : undefined}
-                        className={classNames(
-                            item.current 
-                                ? 'bg-white/10 text-white' 
-                                : 'text-gray-400 hover:text-white hover:bg-white/5',
-                            'group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200'
-                        )}
-                    >
-                        <Image 
-                            src={item.icon} 
-                            alt={item.name} 
-                            width={24} 
-                            height={24}
-                            className="transition-transform duration-200 group-hover:scale-110"
-                        />
-                        <span>{item.name}</span>
-                    </a>
-                ))}
-            </div>
+        {/* <div className="h-screen w-screen bg-red-500 flex">
+    
             <div className="bg-white w-full h-full flex flex-col">
                 <div className="w-full h-full p-2 flex justify-start items-start flex-wrap gap-x-2 gap-y-2">
                     {actionBtns.map((btn) => (
@@ -151,8 +128,57 @@ export default function Dashboard() {
                 <div className="w-[28.5%] bg-gray-100 h-32 flex flex-col rounded-lg p-2">
                 </div>
             </div>
+        </div> */}
+        <div className="h-screen w-screen grid grid-cols-6 grid-rows-6 bg-white gap-2 p-2">
+            <div className="row-span-6 p-5 gap-4 bg-gray-100 rounded-lg">
+                {navigation.map((item) => (
+                    <a
+                        key={item.name}
+                        href={item.href}
+                        aria-current={item.current ? 'page' : undefined}
+                        className={classNames(
+                            item.current 
+                                ? 'bg-white/10 text-white' 
+                                : 'text-gray-400 hover:text-white hover:bg-white/5',
+                            'group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200'
+                        )}
+                    >
+                        <Image 
+                            src={item.icon} 
+                            alt={item.name} 
+                            width={24} 
+                            height={24}
+                            className="transition-transform duration-200 group-hover:scale-110"
+                        />
+                        <span>{item.name}</span>
+                    </a>
+                ))}
+            </div>
+
+                {actionBtns.map((btn) => (
+                    <div className="col-span-1 row-span-1 flex justify-center">
+                        <a
+                            key={btn.name}
+                            href={btn.href}
+                            className={
+                                "rounded-lg flex justify-center items-center w-full h-[55%] shadow-md hover:shadow-lg transition-shadow duration-200 " +
+                                btn.css
+                            }
+                        >
+                            {btn.icon ? (
+                                <Image
+                                    src={btn.icon}
+                                    alt={btn.name}
+                                    width={20}
+                                    height={20}
+                                    className="mr-2"
+                                />
+                            ) : null}
+                            <span>{btn.name}</span>
+                        </a>
+                    </div>
+                ))}
         </div>
-    </div>
-    </>
+        </>
     )
 }
