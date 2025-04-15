@@ -9,11 +9,11 @@ const navigation = [
 ]
 
 const actionBtns = [
-    { name: 'FREELANCE JOBS', icon: null, href: '#', css: "w-1/5 bg-sky-blue text-prussian-blue"},
-    { name: 'FULL-TIME JOBS', icon: null, href: '#', css: "w-1/5 bg-blue-green text-white "},
-    { name: 'CATALOGS', icon: null, href: '#', css: "w-1/5 bg-prussian-blue text-white"},
-    { name: 'POST GIG', icon: "/48-s-add.svg", href: '#', css: "w-1/8 bg-selective-yellow text-prussian-blue"},
-    { name: '', icon: null, href: '#', css: "w-1/12 bg-ut-orange"},
+    { name: 'FREELANCE JOBS', icon: null, href: '#', css: "w-[23%] bg-sky-blue text-prussian-blue"},
+    { name: 'FULL-TIME JOBS', icon: null, href: '#', css: "w-[23%] bg-blue-green text-white "},
+    { name: 'CATALOGS', icon: null, href: '#', css: "w-[23%] bg-prussian-blue text-white"},
+    { name: 'POST GIG', icon: "/48-s-add.svg", href: '#', css: "w-[23%] bg-selective-yellow text-prussian-blue"},
+    { name: '', icon: null, href: '#', css: "w-[8%] max-w-0 bg-ut-orange"},
 ]
 
 const gigBtns = [
@@ -106,49 +106,53 @@ export default function Dashboard() {
                     </a>
                 ))}
             </div>
-            <div className="bg-white w-full h-full flex flex-col ">
-                <div className="w-full h-full p-2 flex justify-between items-center px-4 max-width-full flex-wrap">
+            <div className="bg-white w-full h-full flex flex-col">
+                <div className="w-full h-full p-2 flex justify-start items-start flex-wrap gap-x-2 gap-y-2">
                     {actionBtns.map((btn) => (
-                        <a key={btn.name} 
+                    <a
+                        key={btn.name}
                         href={btn.href}
-                        className={"h-full rounded-lg flex items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-200 " + btn.css}
-                        >
-                        {btn.icon ?
-                            <Image 
-                            src={btn.icon} 
-                            alt={btn.name} 
-                            width={20} 
-                            height={20}
-                            className="mr-2"
-                        /> : null }
-                        <span>{btn.name}</span>
-                        </a>
-                    ))}
-
-                    <div className="w-3/4 bg-gray-100 h-full flex flex-col rounded-lg p-2">
-                        <div className="w-full bg-gray-200 flex">
-                            {
-                                gigBtns.map((btn) => (
-                                    <button className={classNames(
-                                        btn.current 
-                                            ? 'bg-prussian-blue text-white' 
-                                            : 'text-prussian-blue',
-                                        'flex justify-center items-center h-12 w-1/2 rounded-lg'
+                        className={
+                        "h-16 rounded-lg min-w-[55px] flex items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-200 " +
+                        btn.css
+                        }
+                    >
+                    {btn.icon ? (
+                    <Image
+                        src={btn.icon}
+                        alt={btn.name}
+                        width={20}
+                        height={20}
+                        className="mr-2"
+                    />
+                    ) : null}
+                    <span>{btn.name}</span>
+                </a>
+                ))}
+                <div className="w-[70.5%] bg-gray-100 flex flex-col rounded-lg p-2 gap-y-4">
+                    <div className="w-full h-18 max-h-36 rounded-lg flex bg-gray-200 p-1">
+                        {
+                            gigBtns.map((btn) => (
+                                <button className={classNames(
+                                    btn.current 
+                                        ? 'bg-prussian-blue text-white' 
+                                        : 'bg-gray-200 text-prussian-blue',
+                                    'flex rounded-lg items-center justify-center w-1/2 h-full'
                                     )}>
-                                        {btn.name}
-                                    </button>
-                                ))
-                            }
-                        </div>
-                        <div className="w-full flex-1 bg-gray-200 mt-2">
-                        </div>
+                                    {btn.name}
+                                </button>
+                            ))
+                        }
                     </div>
-                    <div className="w-1/4 bg-yellow-500 h-full rounded-lg">
-
+                    <div className="w-full h-18 rounded-lg flex bg-gray-200 p-1">
                     </div>
+                    
+                </div>
+                <div className="w-[28.5%] bg-gray-100 h-32 flex flex-col rounded-lg p-2">
                 </div>
             </div>
         </div>
-        </>
+    </div>
+    </>
     )
 }
