@@ -16,6 +16,61 @@ const actionBtns = [
     { name: '', icon: null, href: '#', css: "w-1/12 bg-ut-orange"},
 ]
 
+const gigBtns = [
+    { name: 'ACTIVE GIGS', current: true },
+    { name: 'COMPLETED GIGS', current: false },
+]
+
+const activeGigs = [
+    {
+        id: 1,
+        title: 'Website Development for Local Restaurant',
+        client: 'Gourmet Bites',
+        status: 'In Progress',
+        budget: '$2,500',
+        deadline: '2024-04-15',
+        progress: 65,
+        description: 'Create a responsive website with online ordering system for a local restaurant.',
+        category: 'Web Development',
+        skills: ['React', 'Node.js', 'MongoDB']
+    },
+    {
+        id: 2,
+        title: 'Logo Design for Tech Startup',
+        client: 'TechVentures Inc',
+        status: 'Review',
+        budget: '$800',
+        deadline: '2024-03-25',
+        progress: 90,
+        description: 'Design a modern and minimalist logo for a new AI startup.',
+        category: 'Graphic Design',
+        skills: ['Adobe Illustrator', 'Branding']
+    },
+    {
+        id: 3,
+        title: 'Social Media Marketing Campaign',
+        client: 'EcoFriendly Products',
+        status: 'In Progress',
+        budget: '$1,200',
+        deadline: '2024-04-10',
+        progress: 40,
+        description: '3-month social media marketing campaign focusing on Instagram and LinkedIn.',
+        category: 'Digital Marketing',
+        skills: ['Social Media', 'Content Creation', 'Analytics']
+    },
+    {
+        id: 4,
+        title: 'Mobile App UI/UX Design',
+        client: 'FitnessFirst',
+        status: 'In Progress',
+        budget: '$3,000',
+        deadline: '2024-04-20',
+        progress: 30,
+        description: 'Design user interface and experience for a fitness tracking mobile application.',
+        category: 'UI/UX Design',
+        skills: ['Figma', 'User Research', 'Prototyping']
+    }
+]
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -51,8 +106,8 @@ export default function Dashboard() {
                     </a>
                 ))}
             </div>
-            <div className="bg-white w-full h-full flex flex-col">
-                <div className="w-full h-20 p-2 flex justify-evenly">
+            <div className="bg-white w-full h-full flex flex-col ">
+                <div className="w-full h-full p-2 flex justify-between items-center px-4 max-width-full flex-wrap">
                     {actionBtns.map((btn) => (
                         <a key={btn.name} 
                         href={btn.href}
@@ -69,6 +124,28 @@ export default function Dashboard() {
                         <span>{btn.name}</span>
                         </a>
                     ))}
+
+                    <div className="w-3/4 bg-gray-100 h-full flex flex-col rounded-lg p-2">
+                        <div className="w-full bg-gray-200 flex">
+                            {
+                                gigBtns.map((btn) => (
+                                    <button className={classNames(
+                                        btn.current 
+                                            ? 'bg-prussian-blue text-white' 
+                                            : 'text-prussian-blue',
+                                        'flex justify-center items-center h-12 w-1/2 rounded-lg'
+                                    )}>
+                                        {btn.name}
+                                    </button>
+                                ))
+                            }
+                        </div>
+                        <div className="w-full flex-1 bg-gray-200 mt-2">
+                        </div>
+                    </div>
+                    <div className="w-1/4 bg-yellow-500 h-full rounded-lg">
+
+                    </div>
                 </div>
             </div>
         </div>
