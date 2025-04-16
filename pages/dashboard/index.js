@@ -67,55 +67,6 @@ export default function Dashboard() {
     return (
         <>
         <Navbar page="dashboard"/>
-
-        {/* <div className="h-screen w-screen bg-red-500 flex">
-    
-            <div className="bg-white w-full h-full flex flex-col">
-                <div className="w-full h-full p-2 flex justify-start items-start flex-wrap gap-x-2 gap-y-2">
-                    {actionBtns.map((btn) => (
-                    <a
-                        key={btn.name}
-                        href={btn.href}
-                        className={
-                        "h-16 rounded-lg min-w-[55px] flex items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-200 " +
-                        btn.css
-                        }
-                    >
-                    {btn.icon ? (
-                    <Image
-                        src={btn.icon}
-                        alt={btn.name}
-                        width={20}
-                        height={20}
-                        className="mr-2"
-                    />
-                    ) : null}
-                    <span>{btn.name}</span>
-                </a>
-                ))}
-                <div className="w-[70.5%] bg-gray-100 flex flex-col rounded-lg p-2 gap-y-4">
-                    <div className="w-full h-18 max-h-36 rounded-lg flex bg-gray-200 p-1">
-                        {
-                            gigBtns.map((btn) => (
-                                <button className={classNames(
-                                    btn.current 
-                                        ? 'bg-prussian-blue text-white' 
-                                        : 'bg-gray-200 text-prussian-blue',
-                                    'flex rounded-lg items-center justify-center w-1/2 h-full'
-                                    )}>
-                                    {btn.name}
-                                </button>
-                            ))
-                        }
-                    </div>
-                    <div className="w-full h-18 rounded-lg flex bg-gray-200 p-1">
-                    </div>
-                    
-                </div>
-                <div className="w-[28.5%] bg-gray-100 h-32 flex flex-col rounded-lg p-2">
-                </div>
-            </div>
-        </div> */}
         <div className="h-screen w-screen grid grid-cols-10 grid-rows-10 bg-white gap-2 p-2">
             {/* sidebar navigation */}
             <div className="row-span-full col-span-2 p-5 gap-4 bg-gray-100 rounded-lg">
@@ -192,8 +143,42 @@ export default function Dashboard() {
                     ))
                 }
             </div>
-            <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg">
-
+            {/* Wallet content */}
+            <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg flex flex-col p-2 gap-2">
+                <div className="w-full h-[15%]">
+                    <h2 className="text-md font-semibold text-prussian-blue">WALLET</h2>
+                </div>
+                <div className="w-full h-1/4 gap-2">
+                    <p className="text-prussian-blue">Estimated Balance: $0.00</p>
+                    <p className="text-prussian-blue">Safe Balance: $0.00</p>
+                </div>
+                <div className="w-full h-1/4 bg-gray-200 rounded-lg flex p-3">
+                    <div className="w-[85%] h-full">
+                    <span className="flex items-center gap-2 text-prussian-blue">
+                        <Image
+                            src="/cloud.svg"
+                            alt="cloud"
+                            width={20}
+                            height={20}
+                        />
+                        <p className="text-sm font-medium">Cloud Wallet</p>
+                    </span>
+                        <p className="text-prussian-blue">0xEDf309C67875</p>
+                    </div>
+                </div>
+                <button className="w-full rounded-lg h-1/4 bg-ut-orange flex items-center p-2 gap-3 hover:opacity-90 transition-all">
+                    <Image
+                        src="/MetaMask_Fox.svg"
+                        alt="Meta Mask Fox"
+                        width={45}
+                        height={45}
+                        className="bg-black rounded-lg"
+                    />
+                    <div className="w-full h-full text-left">
+                        <p className="text-prussian-blue font-semibold">Connect Metamask</p>
+                        <p className="text-prussian-blue text-sm">Sync Your Accounts</p>
+                    </div>
+                </button>
             </div>
             <div className="col-span-2 row-span-5 bg-gray-100 rounded-lg">
 
