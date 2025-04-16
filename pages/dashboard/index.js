@@ -2,10 +2,10 @@ import Navbar from "@/components/landing/Navbar"
 import Image from "next/image"
 
 const navigation = [
-    { name: 'Home', icon: '/48-home.svg', href: '/dashboard', current: true },
-    { name: 'Profile', icon: '/48-home.svg', href: '#', current: false },
-    { name: 'Messages', icon: '/48-home.svg', href: '#', current: false },
-    { name: 'Settings', icon: '/48-home.svg', href: '#', current: false },
+    { name: 'Home', icon: '/home-3.svg', href: '/dashboard', current: true },
+    { name: 'Wallet', icon: '/wallet-2.svg', href: '#', current: false },
+    { name: 'Activity', icon: '/c-question-3.svg', href: '#', current: false },
+    { name: 'My Gigs', icon: '/lock-3.svg', href: '#', current: false },
 ]
 
 const actionBtns = [
@@ -67,7 +67,7 @@ export default function Dashboard() {
     return (
         <>
         <Navbar page="dashboard"/>
-        <div className="h-screen w-screen grid grid-cols-10 grid-rows-10 bg-white gap-2 p-2">
+        <div className="h-screen w-screen grid grid-cols-10 grid-rows-10 bg-white gap-2 p-2 shadow-md">
             {/* sidebar navigation */}
             <div className="row-span-full col-span-2 p-5 gap-4 bg-gray-100 rounded-lg">
                 {navigation.map((item) => (
@@ -77,9 +77,9 @@ export default function Dashboard() {
                         aria-current={item.current ? 'page' : undefined}
                         className={classNames(
                             item.current 
-                                ? 'bg-white/10 text-white' 
-                                : 'text-gray-400 hover:text-white hover:bg-white/5',
-                            'group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200'
+                                ? 'bg-gray-200 border-gray-400 border' 
+                                : 'hover:scale-105',
+                            'group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-prussian-blue'
                         )}
                     >
                         <Image 
@@ -100,7 +100,7 @@ export default function Dashboard() {
                         key={btn.name}
                         href={btn.href}
                         className={
-                            `rounded-lg flex justify-center items-center w-full h-full shadow-md hover:shadow-lg transition-shadow duration-200 ${btn.colors}`
+                            `rounded-lg flex justify-center items-center w-full h-full shadow-md hover:scale-101 hover:shadow-lg transition-shadow duration-200 ${btn.colors}`
                         }                       
                         >
                         {btn.icon ? (
@@ -118,17 +118,20 @@ export default function Dashboard() {
             ))}
 
             {/* gigs */}
-            <div className="col-span-6 row-start-2 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3">
-                <div className="flex w-full h-[13%] rounded-lg bg-gray-200 p-1">
+            <div className="col-span-6 row-start-2 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3 shadow-md">
+                <div className="flex w-full h-[13%] rounded-lg bg-gray-200 p-1 shadow-sm gap-1">
                     {
                         gigBtns.map((btn) => (
-                            <button className={
-                                btn.current ? "text-white bg-prussian-blue h-full w-1/2 rounded-lg" 
-                                : "text-prussian-blue h-full w-1/2 "
-                            }>
-                                {btn.name}
+                            <button
+                              key={btn.name}
+                              className={`h-full w-1/2 rounded-lg transition-all duration-200 ease-in-out
+                                ${btn.current
+                                  ? "bg-prussian-blue text-white shadow-sm"
+                                  : "text-prussian-blue hover:white hover:shadow-md"}`}
+                            >
+                              {btn.name}
                             </button>
-                        ))
+                          ))
                     }
                 </div>
 
@@ -144,7 +147,7 @@ export default function Dashboard() {
                 }
             </div>
             {/* Wallet content */}
-            <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg flex flex-col p-2 gap-2">
+            <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg flex flex-col p-2 gap-2 shadow-md">
                 <div className="w-full h-[15%]">
                     <h2 className="text-md font-semibold text-prussian-blue">WALLET</h2>
                 </div>
@@ -180,7 +183,7 @@ export default function Dashboard() {
                     </div>
                 </button>
             </div>
-            <div className="col-span-2 row-span-5 bg-gray-100 rounded-lg">
+            <div className="col-span-2 row-span-5 bg-gray-100 rounded-lg shadow-md">
 
             </div>
         </div>
