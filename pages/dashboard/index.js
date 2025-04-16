@@ -9,11 +9,10 @@ const navigation = [
 ]
 
 const actionBtns = [
-    { name: 'FREELANCE JOBS', icon: null, href: '#', css: " bg-sky-blue text-prussian-blue"},
-    { name: 'FULL-TIME JOBS', icon: null, href: '#', css: " bg-blue-green text-white "},
-    { name: 'CATALOGS', icon: null, href: '#', css: " bg-prussian-blue text-white"},
-    { name: 'POST GIG', icon: "/48-s-add.svg", href: '#', css: " bg-selective-yellow text-prussian-blue"},
-    { name: '', icon: null, href: '#', css: " bg-ut-orange"},
+    { name: 'FREELANCE JOBS', icon: null, href: '#', colors: "bg-sky-blue text-prussian-blue", css: "col-span-2" },
+    { name: 'FULL-TIME JOBS', icon: null, href: '#', colors: "bg-blue-green text-white", css: "col-span-2" },
+    { name: 'CATALOGS', icon: null, href: '#', colors: "bg-prussian-blue text-white", css: "col-span-2" },
+    { name: 'POST GIG', icon: "/48-s-add.svg", href: '#', colors: "bg-selective-yellow text-prussian-blue", css: "col-span-2" },
 ]
 
 const gigBtns = [
@@ -21,56 +20,44 @@ const gigBtns = [
     { name: 'COMPLETED GIGS', current: false },
 ]
 
-const activeGigs = [
+const gigs = [
     {
-        id: 1,
-        title: 'Website Development for Local Restaurant',
-        client: 'Gourmet Bites',
-        status: 'In Progress',
-        budget: '$2,500',
-        deadline: '2024-04-15',
-        progress: 65,
-        description: 'Create a responsive website with online ordering system for a local restaurant.',
-        category: 'Web Development',
-        skills: ['React', 'Node.js', 'MongoDB']
+      name: "Web Design",
+      description: "I will create a modern and responsive web design tailored to your needs.",
+      price: "$1500",
+      current: true,
     },
     {
-        id: 2,
-        title: 'Logo Design for Tech Startup',
-        client: 'TechVentures Inc',
-        status: 'Review',
-        budget: '$800',
-        deadline: '2024-03-25',
-        progress: 90,
-        description: 'Design a modern and minimalist logo for a new AI startup.',
-        category: 'Graphic Design',
-        skills: ['Adobe Illustrator', 'Branding']
+      name: "Logo Creation",
+      description: "Get a unique and professional logo to represent your brand.",
+      price: "$300",
+      current: false,
     },
     {
-        id: 3,
-        title: 'Social Media Marketing Campaign',
-        client: 'EcoFriendly Products',
-        status: 'In Progress',
-        budget: '$1,200',
-        deadline: '2024-04-10',
-        progress: 40,
-        description: '3-month social media marketing campaign focusing on Instagram and LinkedIn.',
-        category: 'Digital Marketing',
-        skills: ['Social Media', 'Content Creation', 'Analytics']
+      name: "SEO Optimization",
+      description: "Boost your site's ranking with advanced SEO techniques.",
+      price: "$800",
+      current: false,
     },
     {
-        id: 4,
-        title: 'Mobile App UI/UX Design',
-        client: 'FitnessFirst',
-        status: 'In Progress',
-        budget: '$3,000',
-        deadline: '2024-04-20',
-        progress: 30,
-        description: 'Design user interface and experience for a fitness tracking mobile application.',
-        category: 'UI/UX Design',
-        skills: ['Figma', 'User Research', 'Prototyping']
-    }
-]
+      name: "App UI/UX",
+      description: "I’ll design a sleek and user-friendly mobile app interface.",
+      price: "$1200",
+      current: false,
+    },
+    {
+      name: "Landing Page",
+      description: "Custom landing page optimized for conversions and mobile.",
+      price: "$950",
+      current: false,
+    },
+    {
+      name: "E-commerce Setup",
+      description: "Complete online store setup with payment integration.",
+      price: "$2000",
+      current: false,
+    },
+];
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -129,8 +116,9 @@ export default function Dashboard() {
                 </div>
             </div>
         </div> */}
-        <div className="h-screen w-screen grid grid-cols-6 grid-rows-6 bg-white gap-2 p-2">
-            <div className="row-span-6 p-5 gap-4 bg-gray-100 rounded-lg">
+        <div className="h-screen w-screen grid grid-cols-10 grid-rows-10 bg-white gap-2 p-2">
+            {/* sidebar navigation */}
+            <div className="row-span-full col-span-2 p-5 gap-4 bg-gray-100 rounded-lg">
                 {navigation.map((item) => (
                     <a
                         key={item.name}
@@ -154,30 +142,62 @@ export default function Dashboard() {
                     </a>
                 ))}
             </div>
-
-                {actionBtns.map((btn) => (
-                    <div className="col-span-1 row-span-1 flex justify-center">
-                        <a
-                            key={btn.name}
-                            href={btn.href}
-                            className={
-                                "rounded-lg flex justify-center items-center w-full h-[55%] shadow-md hover:shadow-lg transition-shadow duration-200 " +
-                                btn.css
-                            }
+            {/* action buttons */}
+            {actionBtns.map((btn) => (
+                <div className={`row-span-1 flex justify-center ${btn.css}`}>
+                    <a
+                        key={btn.name}
+                        href={btn.href}
+                        className={
+                            `rounded-lg flex justify-center items-center w-full h-full shadow-md hover:shadow-lg transition-shadow duration-200 ${btn.colors}`
+                        }                       
                         >
-                            {btn.icon ? (
-                                <Image
-                                    src={btn.icon}
-                                    alt={btn.name}
-                                    width={20}
-                                    height={20}
-                                    className="mr-2"
-                                />
-                            ) : null}
-                            <span>{btn.name}</span>
-                        </a>
-                    </div>
-                ))}
+                        {btn.icon ? (
+                            <Image
+                                src={btn.icon}
+                                alt={btn.name}
+                                width={20}
+                                height={20}
+                                className="mr-2"
+                            />
+                        ) : null}
+                        <span>{btn.name}</span>
+                    </a>
+                </div>
+            ))}
+
+            {/* gigs */}
+            <div className="col-span-6 row-start-2 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3">
+                <div className="flex w-full h-[13%] rounded-lg bg-gray-200 p-1">
+                    {
+                        gigBtns.map((btn) => (
+                            <button className={
+                                btn.current ? "text-white bg-prussian-blue h-full w-1/2 rounded-lg" 
+                                : "text-prussian-blue h-full w-1/2 "
+                            }>
+                                {btn.name}
+                            </button>
+                        ))
+                    }
+                </div>
+
+                {/* Gig Content */}
+                {
+                    gigs.slice(0, 4).map((gig) => (
+                        <div className="w-full rounded-lg bg-gray-200 shadow-sm p-4 flex flex-col gap-1 border border-gray-200">
+                            <h2 className="text-md font-semibold text-prussian-blue">{gig.name}</h2>
+                            <p className="text-gray-700">{gig.description}</p>
+                            <div className="text-lg font-bold text-orange-600">{gig.price}</div>
+                        </div>
+                    ))
+                }
+            </div>
+            <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg">
+
+            </div>
+            <div className="col-span-2 row-span-5 bg-gray-100 rounded-lg">
+
+            </div>
         </div>
         </>
     )
