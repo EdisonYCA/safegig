@@ -66,7 +66,7 @@ function classNames(...classes) {
 export default function Dashboard() {
     return (
         <>
-        <Navbar />
+        <Navbar page="dashboard"/>
 
         {/* <div className="h-screen w-screen bg-red-500 flex">
     
