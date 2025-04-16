@@ -34,6 +34,17 @@ export default function Navbar({page}) {
             </div>
             {
               page == "dashboard" ? 
+              <>
+              <div className="w-1/2 flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M16.65 16.65A7.5 7.5 0 1116.65 2a7.5 7.5 0 010 15z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search gigs..."
+                  className="w-full outline-none text-sm text-gray-700 placeholder-gray-400"
+                />
+              </div>
               <Menu as="div" className="relative ml-3">
               <div>
                 <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
@@ -75,7 +86,8 @@ export default function Navbar({page}) {
                   </a>
                 </MenuItem>
               </MenuItems>
-            </Menu> : <div className="hidden sm:ml-6 sm:block">
+            </Menu>
+            </> : <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {navigation.map((item) => (
                   <a
