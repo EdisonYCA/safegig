@@ -12,9 +12,8 @@ export default function ActionButtons(){
         <>
         {/* action buttons */}
         {actionBtns.map((btn) => (
-                <div className={`row-span-1 flex justify-center ${btn.css}`}>
+                <div key={btn.name} className={`row-span-1 flex justify-center ${btn.css}`}>
                     <a
-                        key={btn.name}
                         href={btn.href}
                         className={
                             `rounded-lg flex justify-center items-center w-full h-full shadow-md hover:scale-101 hover:shadow-lg transition-shadow duration-200 ${btn.colors}`
