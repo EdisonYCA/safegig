@@ -2,6 +2,7 @@ import Navbar from "@/components/landing/Navbar"
 import Home from "@/components/dashboard/Home"
 import SideNav from "@/components/dashboard/SideNav"
 import ActionButtons from "@/components/dashboard/ActionButtons"
+import Jobs from "@/components/dashboard/Jobs"
 import { useStateContext } from "@/context/StateContext"
 
 export default function Dashboard() {
@@ -10,6 +11,8 @@ export default function Dashboard() {
     const renderContent = () => {
         if (content == "Home") {
             return <Home/>
+        } else if (content == "FREELANCE JOBS") {
+            return <Jobs/>
         }
     }
 
