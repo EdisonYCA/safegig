@@ -1,8 +1,6 @@
 import Image from "next/image";
 
 export default function JobDetailModal({ job, onClose }) {
-    if (!job) return null;
-
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-2xl relative">
@@ -46,7 +44,13 @@ export default function JobDetailModal({ job, onClose }) {
 
                 <h1 className="text-xl font-bold text-prussian-blue mb-2">{job.title}</h1>
                 <p className="text-md text-gray-700 mb-4">{job.description}</p>
-                <div className="text-ut-orange font-bold text-lg">${job.price}</div>
+                <div className="flex gap-60 pt-2">
+                    <h2 className="text-lg font-bold text-ut-orange">${job.price}</h2>
+                    <button className="w-1/2 h-full rounded-lg shadow-lg bg-blue-green"
+                    >
+                        Send Work Request
+                    </button>
+                </div>
             </div>
         </div>
     );
