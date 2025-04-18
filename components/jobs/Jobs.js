@@ -39,11 +39,35 @@ const JobDB = [
         price: 4000,
         stars: 5,
         id: 3
+    },
+    {
+        profile_pic: "/circle-user-filled.svg",
+        name: "Stephen Leshko",
+        title: "Teach CMPSC 263",
+        description: "Looking for a skilled developer to teach a modern web development and blockchain course in ReactJS.",
+        price: 10000,
+        stars: 5,
+        id: 2
+    },
+    {
+        profile_pic: "/circle-user-filled.svg",
+        name: "Jessica Lee",
+        title: "Figma UX Designer",
+        description: "We're redesigning our mobile app and need a Figma-savvy UX designer with mobile experience.",
+        price: 4000,
+        stars: 5,
+        id: 3
     }
 ];
 
 export default function Jobs(){
     const [selectedJob, setSelectedJob] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const filteredJobs = JobDB.filter((job) => (
+        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.description.toLowerCase().includes(searchQuery.toLowerCase())
+    ))
 
     return (
         <div className="row-start-2 col-start-3 row-span-full col-span-full bg-gray-100 rounded-lg p-3 shadow-md gap-3 flex flex-col">
@@ -57,6 +81,7 @@ export default function Jobs(){
                         className="mr-2"
                     />
                     <input
+                    onChange={(s) => (setSearchQuery(s.target.value))}
                     type="text"
                     placeholder="Search gigs..."
                     className="w-full outline-none text-sm text-prussian-blue placeholder-prussian-blue"
@@ -64,18 +89,20 @@ export default function Jobs(){
                 </div>
             </div>
             <div className="w-full h-full flex flex-col overflow-y-auto gap-3">
-                {JobDB.map((job) => (
-                        <Job
-                            key={job.id}
-                            profile={job.profile_pic}
-                            name={job.name}
-                            title={job.title}
-                            description={job.description}
-                            price={job.price}
-                            stars={job.stars}
-                            onSeeMore={() => setSelectedJob(job)}
-                        />
-                    ))}
+                {
+                    filteredJobs.map((job) => (
+                    <Job
+                        key={job.id}
+                        profile={job.profile_pic}
+                        name={job.name}
+                        title={job.title}
+                        description={job.description}
+                        price={job.price}
+                        stars={job.stars}
+                        onSeeMore={() => setSelectedJob(job)}
+                    />
+                    ))
+                }
             </div>   
             {
                 selectedJob && <JobDetailModal job={selectedJob} onClose={() => (setSelectedJob(null))}/>

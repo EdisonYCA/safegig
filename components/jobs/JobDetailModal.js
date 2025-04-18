@@ -48,7 +48,7 @@ export default function JobDetailModal({ job, onClose }) {
                     <h2 className="text-lg font-bold text-ut-orange">${job.price}</h2>
                     <button className="w-[20%] h-full rounded-lg shadow-lg bg-red-500 bg-selective-yellow hover:scale-105"
                     >
-                        See More
+                        Interested
                     </button>
                 </div>
             </div>
