@@ -83,7 +83,7 @@ export default function Jobs(){
                     <input
                     onChange={(s) => (setSearchQuery(s.target.value))}
                     type="text"
-                    placeholder="Search gigs..."
+                    placeholder="Search jobs..."
                     className="w-full outline-none text-sm text-prussian-blue placeholder-prussian-blue"
                     />
                 </div>

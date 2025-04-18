@@ -1,5 +1,5 @@
 import Image from "next/image"
-export default function Job({profile, name, title, description, price, stars, onSeeMore}) {
+export default function Gig({profile, name, title, description, price, stars, onSeeMore}) {
     return (
         <div className="w-full w-1/4 bg-white rounded-lg shadow-md p-4">
             <div className="w-full h-[30%] flex gap-2">
@@ -30,8 +30,8 @@ export default function Job({profile, name, title, description, price, stars, on
                 <h1 className="text-lg font-bold text-prussian-blue truncate-lines-2">{title}</h1>
                 <p className="text-md text-prussian-blue truncate-lines-2">{description}</p>
                 <div className="flex justify-between pt-2">
-                    <h2 className="text-lg font-bold text-ut-orange">${price}</h2>
-                    <button className="w-[10%] h-full rounded-lg shadow-lg bg-selective-yellow hover:scale-105"
+                    <h2 className="text-lg font-bold text-ut-orange">${price}/hr</h2>
+                    <button className="w-[10%] h-full rounded-lg shadow-lg bg-ut-orange hover:scale-105"
                     onClick={onSeeMore}
                     >
                         See More
