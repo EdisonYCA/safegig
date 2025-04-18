@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function JobDetailModal({ job, onClose }) {
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-2xl relative">
+            <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl relative">
                 <button
                     onClick={onClose}
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl"
@@ -44,11 +44,11 @@ export default function JobDetailModal({ job, onClose }) {
 
                 <h1 className="text-xl font-bold text-prussian-blue mb-2">{job.title}</h1>
                 <p className="text-md text-gray-700 mb-4">{job.description}</p>
-                <div className="flex gap-60 pt-2">
+                <div className="flex justify-between pt-2">
                     <h2 className="text-lg font-bold text-ut-orange">${job.price}</h2>
-                    <button className="w-1/2 h-full rounded-lg shadow-lg bg-blue-green"
+                    <button className="w-[20%] h-full rounded-lg shadow-lg bg-red-500 bg-selective-yellow hover:scale-105"
                     >
-                        Send Work Request
+                        See More
                     </button>
                 </div>
             </div>

@@ -46,7 +46,7 @@ export default function Jobs(){
     const [selectedJob, setSelectedJob] = useState(null);
 
     return (
-        <div className="grid grid-cols-10 grid-rows-10 row-start-2 col-start-3 row-span-full col-span-full bg-gray-100 rounded-lg p-3 shadow-md gap-3">
+        <div className="row-start-2 col-start-3 row-span-full col-span-full bg-gray-100 rounded-lg p-3 shadow-md gap-3 flex flex-col">
             <div className="col-span-full flex justify-center">
                 <div className="w-full flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 shadow-sm">
                     <Image
@@ -63,21 +63,20 @@ export default function Jobs(){
                     />
                 </div>
             </div>
-            {/* Scrollable Jobs Grid */}
-            {
-                JobDB.map((job) => (
-                    <Job
-                        key={job.id}
-                        profile={job.profile_pic}
-                        name={job.name}
-                        title={job.title}
-                        description={job.description}
-                        price={job.price}
-                        stars={job.stars}
-                        onSeeMore={() => setSelectedJob(job)}
+            <div className="w-full h-full flex flex-col overflow-y-auto gap-3">
+                {JobDB.map((job) => (
+                        <Job
+                            key={job.id}
+                            profile={job.profile_pic}
+                            name={job.name}
+                            title={job.title}
+                            description={job.description}
+                            price={job.price}
+                            stars={job.stars}
+                            onSeeMore={() => setSelectedJob(job)}
                         />
-                ))
-            }
+                    ))}
+            </div>   
             {
                 selectedJob && <JobDetailModal job={selectedJob} onClose={() => (setSelectedJob(null))}/>
             }
