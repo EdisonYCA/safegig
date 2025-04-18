@@ -3,6 +3,7 @@ import Home from "@/components/dashboard/Home"
 import SideNav from "@/components/dashboard/SideNav"
 import ActionButtons from "@/components/dashboard/ActionButtons"
 import Jobs from "@/components/jobs/Jobs"
+import Job from "@/components/jobs/Job"
 import { useStateContext } from "@/context/StateContext"
 
 export default function Dashboard() {
@@ -13,6 +14,8 @@ export default function Dashboard() {
             return <Home/>
         } else if (content == "FREELANCE JOBS") {
             return <Jobs/>
+        } else if (content == "Job") {
+            return <Job/>
         }
     }
 
