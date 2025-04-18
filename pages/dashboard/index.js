@@ -2,7 +2,7 @@ import Navbar from "@/components/landing/Navbar"
 import Home from "@/components/dashboard/Home"
 import SideNav from "@/components/dashboard/SideNav"
 import ActionButtons from "@/components/dashboard/ActionButtons"
-import Jobs from "@/components/dashboard/Jobs"
+import Jobs from "@/components/jobs/Jobs"
 import { useStateContext } from "@/context/StateContext"
 
 export default function Dashboard() {
