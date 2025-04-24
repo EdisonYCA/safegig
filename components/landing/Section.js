@@ -28,11 +28,6 @@ export default function Section(
                     <>
                         <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold max-w-2xl">{title}</h1>
                         <p className="text-2xl max-w-2xl">{description}</p>
-                    </>
-                    }
-                    <div className={`flex h-11 ${feature ? "w-64" : "w-96 gap-2"}`}>
-                        {/* <button className={`${feature ? "bg-prussian-blue" : "bg-ut-orange"} custom-button`}>FIND JOBS</button>
-                        {feature ? null : <button className="border custom-button">FIND TALENT</button>} */}
                         <ConnectButton
                             client={client}
                             wallets={wallets}
@@ -46,7 +41,8 @@ export default function Section(
                             connectModal={{ size: "compact", showThirdwebBranding: false }}
                             connectButton={{ label: "Get Started" }}
                         />
-                    </div>
+                    </>
+                    }
                 </div>
                 <div className='w-8/12'>
                     <DotLottieReact
