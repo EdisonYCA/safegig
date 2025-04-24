@@ -1,4 +1,8 @@
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { ConnectButton } from 'thirdweb/react'
+import { client } from '@/library/thirdwebClient'
+import { wallets } from '@/library/thirdwebClient'
+import { darkTheme } from "thirdweb/react";
 
 
 export default function Section(
@@ -27,8 +31,21 @@ export default function Section(
                     </>
                     }
                     <div className={`flex h-11 ${feature ? "w-64" : "w-96 gap-2"}`}>
-                        <button className={`${feature ? "bg-prussian-blue" : "bg-ut-orange"} custom-button`}>FIND JOBS</button>
-                        {feature ? null : <button className="border custom-button">FIND TALENT</button>}
+                        {/* <button className={`${feature ? "bg-prussian-blue" : "bg-ut-orange"} custom-button`}>FIND JOBS</button>
+                        {feature ? null : <button className="border custom-button">FIND TALENT</button>} */}
+                        <ConnectButton
+                            client={client}
+                            wallets={wallets}
+                            theme={darkTheme({
+                                colors: {
+                                primaryButtonBg: "hsl(32, 100%, 49%)",
+                                primaryButtonText: "hsl(0, 0%, 100%)",
+                                },
+                                fontFamily: 'Outfit'
+                            })}
+                            connectModal={{ size: "compact", showThirdwebBranding: false }}
+                            connectButton={{ label: "Get Started" }}
+                        />
                     </div>
                 </div>
                 <div className='w-8/12'>

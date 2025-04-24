@@ -14,7 +14,9 @@
     "@lottiefiles/dotlottie-react": "^0.13.3",
     "next": "15.2.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "styled-components": "^6.1.17",
+    "thirdweb": "^5.96.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
