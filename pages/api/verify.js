@@ -1,4 +1,4 @@
-import cookie from "cookie";
+import * as cookie from "cookie";
 import { auth } from "@/library/thirdwebClient";
 
 
@@ -14,12 +14,10 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing payload" });
     }
 
-    const verifyPayload = await auth.verifyPayload({ payload });
-
-    console.log(verifyPayload)
+    const verifyPayload = await auth.verifyPayload({ payload: payload.payload, signature: payload.signature });
 
     if (verifyPayload.valid) {
-      const jwt = await auth.generateJWT({ payload });
+      const jwt = await auth.generateJWT({ payload: verifyPayload.payload });
 
       res.setHeader(
         "Set-Cookie",

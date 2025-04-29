@@ -14,8 +14,7 @@ export default async function handler(req, res) {
 
     const loginPayload = await auth.generatePayload({
       address,
-      chainId,
-      domain: "localhost:3000"
+      chainId
     });
 
     return res.status(200).json(loginPayload);

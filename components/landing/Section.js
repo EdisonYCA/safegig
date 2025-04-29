@@ -56,6 +56,7 @@ export default function Section(
                                         }
 
                                         const payload = await res.json();
+                                        console.log(payload)
                                         return payload
                                   },
                                   doLogin: async (loginPayload) => {
@@ -68,8 +69,10 @@ export default function Section(
                                       });
                                     
                                       if (!res.ok) {
-                                        alert("Login failed");
-                                        return;
+                                        const errorData = await res.json();
+                                        alert(errorData.error);
+                                        alert(errorData.details || "")
+                                        return;                                      
                                       }
                                     
                                       setLoggedIn(true);
