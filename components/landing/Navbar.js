@@ -3,7 +3,6 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { useStateContext } from '@/context/StateContext'
 
-
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', current: false },
 ]
@@ -12,13 +11,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
+
 export default function Navbar({page}) {
-
-  const {loggedIn, setLoggedIn} = useStateContext();
-
-  const logout = async () => {
-    null;
-  }
+  const {loggedIn} = useStateContext();
 
   return (
     <Disclosure as="nav" className="bg-sky-blue">
@@ -99,10 +94,9 @@ export default function Navbar({page}) {
                       </a>
                     ))}
                     <button
-                      onClick={async () => await logout()}
                       className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                     >
-                      Log Out
+                      Log Out 
                     </button>
                   </div>
               </div> : null
