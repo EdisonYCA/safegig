@@ -18,7 +18,7 @@ export default function Section(
     }
 
 ) {
-    const { setLoggedIn } = useStateContext();
+    const {loggedIn, setLoggedIn } = useStateContext();
 
     return (
             <section className={`flex w-screen ${left ? 'flex-row-reverse' : 'flex-row'} h-screen p-15`}>
@@ -56,7 +56,6 @@ export default function Section(
                                         }
 
                                         const payload = await res.json();
-                                        console.log(payload)
                                         return payload
                                   },
                                   doLogin: async (loginPayload) => {
@@ -67,15 +66,14 @@ export default function Section(
                                         },
                                         body: JSON.stringify({ payload: loginPayload }),
                                       });
-                                    
+                                      const data = await res.json();
+
                                       if (!res.ok) {
-                                        const errorData = await res.json();
-                                        alert(errorData.error);
-                                        alert(errorData.details || "")
-                                        return;                                      
+                                        alert(data.error);
+                                        alert(data.details || "")
                                       }
-                                    
-                                      setLoggedIn(true);
+                                      
+                                      setLoggedIn(data.valid);
                                   },
                                   isLoggedIn: async () => {
                                       const res = await fetch("/api/loggedIn", {
@@ -88,10 +86,10 @@ export default function Section(
                                     
                                       if (!res.ok) {
                                         alert("Checking logged in status failed");
-                                        return;
                                       }
                                       
-                                      setLoggedIn(true);
+                                      const data = await res.json();
+                                      return data.loggedIn;
                                     },
                                   doLogout: async () => {
                                       const res = await fetch("/api/logout", {

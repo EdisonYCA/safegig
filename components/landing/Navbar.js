@@ -5,7 +5,7 @@ import { useStateContext } from '@/context/StateContext'
 
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', current: false }
+  { name: 'Dashboard', href: '/dashboard', current: false },
 ]
 
 function classNames(...classes) {
@@ -14,7 +14,11 @@ function classNames(...classes) {
 
 export default function Navbar({page}) {
 
-  const {loggedIn} = useStateContext();
+  const {loggedIn, setLoggedIn} = useStateContext();
+
+  const logout = async () => {
+    null;
+  }
 
   return (
     <Disclosure as="nav" className="bg-sky-blue">
@@ -94,6 +98,12 @@ export default function Navbar({page}) {
                         {item.name}
                       </a>
                     ))}
+                    <button
+                      onClick={async () => await logout()}
+                      className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                    >
+                      Log Out
+                    </button>
                   </div>
               </div> : null
             }

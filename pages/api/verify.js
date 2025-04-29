@@ -30,12 +30,13 @@ export default async function handler(req, res) {
         })
       );
 
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ valid: true });
     } else {
-      return res.status(401).json({ error: "Invalid payload" });
+      return res.status(401).json({ valid: false, error: "Invalid payload" });
     }
   } catch (err) {
     return res.status(500).json({
+      valid: false,
       error: "Failed to verify user",
       details: err.message,
     });
