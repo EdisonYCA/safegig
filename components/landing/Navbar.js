@@ -1,7 +1,7 @@
 import { Disclosure, DisclosureButton} from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-
+import { useStateContext } from '@/context/StateContext'
 
 
 const navigation = [
@@ -13,6 +13,9 @@ function classNames(...classes) {
 }
 
 export default function Navbar({page}) {
+
+  const {loggedIn} = useStateContext();
+
   return (
     <Disclosure as="nav" className="bg-sky-blue">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -76,25 +79,24 @@ export default function Navbar({page}) {
                 </MenuItem>
               </MenuItems>
             </Menu>
-            </> : <div className="hidden sm:ml-6 sm:block">
-              <div className="flex space-x-4">
-                {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    aria-current={item.current ? 'page' : undefined}
-                    className={classNames(
-                      item.current ? 'bg-gray-900 text-white' : 'text-white hover:bg-gray-700 hover:text-white',
-                      'rounded-md px-3 py-2 text-sm font-medium',
-                    )}
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </div>
+            </> : loggedIn ? <div className="hidden sm:ml-6 sm:block">
+                  <div className="flex space-x-4">
+                    {navigation.map((item) => (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        aria-current={item.current ? 'page' : undefined}
+                        className={classNames(
+                          item.current ? 'bg-gray-900 text-white' : 'text-white hover:bg-gray-700 hover:text-white',
+                          'rounded-md px-3 py-2 text-sm font-medium',
+                        )}
+                      >
+                        {item.name}
+                      </a>
+                    ))}
+                  </div>
+              </div> : null
             }
-            
           </div>
         </div>
       </div>

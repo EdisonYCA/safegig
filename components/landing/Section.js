@@ -3,6 +3,9 @@ import { ConnectButton } from 'thirdweb/react'
 import { client } from '@/library/thirdwebClient'
 import { wallets } from '@/library/thirdwebClient'
 import { darkTheme } from "thirdweb/react";
+import { defineChain } from "thirdweb";
+import { useStateContext } from '@/context/StateContext';
+
 
 
 export default function Section(
@@ -15,6 +18,8 @@ export default function Section(
     }
 
 ) {
+    const { setLoggedIn } = useStateContext();
+
     return (
             <section className={`flex w-screen ${left ? 'flex-row-reverse' : 'flex-row'} h-screen p-15`}>
                 <div className="w-1/2 space-y-3">
@@ -30,6 +35,74 @@ export default function Section(
                         <p className="text-2xl max-w-2xl">{description}</p>
                         <ConnectButton
                             client={client}
+                            accountAbstraction={{
+                                chain: defineChain(97),
+                                sponsorGas: true,
+                            }}
+                            auth={
+                              {
+                                  getLoginPayload: async ({address}) => {
+                                      const res = await fetch("/api/generatePayload", {
+                                          method: "POST",
+                                          headers: {
+                                            "Content-Type": "application/json",
+                                          },
+                                          body: JSON.stringify({ address, chainId: 97 }),
+                                        });   
+                                        
+                                        if (!res.ok) {
+                                          alert("Failed to generate login payload");
+                                          return null;
+                                        }
+
+                                        const payload = await res.json();
+                                        return payload
+                                  },
+                                  doLogin: async (loginPayload) => {
+                                      const res = await fetch("/api/verify", {
+                                        method: "POST",
+                                        headers: {
+                                          "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify({ payload: loginPayload }),
+                                      });
+                                    
+                                      if (!res.ok) {
+                                        alert("Login failed");
+                                        return;
+                                      }
+                                    
+                                      setLoggedIn(true);
+                                  },
+                                  isLoggedIn: async () => {
+                                      const res = await fetch("/api/loggedIn", {
+                                        method: "GET",
+                                        headers: {
+                                          "Content-Type": "application/json",
+                                        },
+                                        credentials: "include"
+                                      });
+                                    
+                                      if (!res.ok) {
+                                        alert("Checking logged in status failed");
+                                        return;
+                                      }
+                                      
+                                      const data = await res.json();
+                                      setLoggedIn(data.loggedIn);
+                                    },
+                                  doLogout: async () => {
+                                      const res = await fetch("/api/logout", {
+                                        method: "GET",
+                                        headers: {
+                                          "Content-Type": "application/json",
+                                        }
+                                      });
+                                  
+                                      setLoggedIn(false);
+                                    }
+                              }
+                          }
                             wallets={wallets}
                             theme={darkTheme({
                                 colors: {

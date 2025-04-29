@@ -1,0 +1,45 @@
+import cookie from "cookie";
+import { auth } from "@/library/thirdwebClient";
+
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
+  try {
+    const { payload } = req.body;
+
+    if (!payload) {
+      return res.status(400).json({ error: "Missing payload" });
+    }
+
+    const verifyPayload = await auth.verifyPayload({ payload });
+
+    console.log(verifyPayload)
+
+    if (verifyPayload.valid) {
+      const jwt = await auth.generateJWT({ payload });
+
+      res.setHeader(
+        "Set-Cookie",
+        cookie.serialize("jwt", jwt, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 7,
+        })
+      );
+
+      return res.status(200).json({ success: true });
+    } else {
+      return res.status(401).json({ error: "Invalid payload" });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      error: "Failed to verify user",
+      details: err.message,
+    });
+  }
+}
