@@ -91,8 +91,7 @@ export default function Section(
                                         return;
                                       }
                                       
-                                      const data = await res.json();
-                                      setLoggedIn(data.loggedIn);
+                                      setLoggedIn(true);
                                     },
                                   doLogout: async () => {
                                       const res = await fetch("/api/logout", {

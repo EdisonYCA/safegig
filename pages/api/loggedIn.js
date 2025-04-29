@@ -1,4 +1,4 @@
-import cookie from "cookie";
+import * as cookie from "cookie";
 import { auth } from "@/library/thirdwebClient";
 
 export default async function handler(req, res) {
