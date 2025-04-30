@@ -48,8 +48,8 @@ export default function Home() {
     return (
         <>
         {/* gigs */}
-        <div className="col-span-6 row-start-2 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3 shadow-md">
-                <div className="flex w-full h-[13%] rounded-lg bg-gray-200 p-1 shadow-sm gap-1">
+        <div className="col-span-7 row-start-3 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3 shadow-md">
+                {/* <div className="flex w-full h-[13%] rounded-lg bg-gray-200 p-1 shadow-sm gap-1">
                     {
                         gigBtns.map((btn) => (
                             <button
@@ -63,10 +63,10 @@ export default function Home() {
                             </button>
                           ))
                     }
-                </div>
+                </div> */}
 
                 {/* Gig Content */}
-                {
+                {/* {
                     gigs.slice(0, 4).map((gig) => (
                         <div className="w-full rounded-lg bg-gray-200 shadow-sm p-4 flex flex-col gap-1 border border-gray-200">
                             <h2 className="text-md font-semibold text-prussian-blue">{gig.name}</h2>
@@ -74,10 +74,10 @@ export default function Home() {
                             <div className="text-lg font-bold text-orange-600">{gig.price}</div>
                         </div>
                     ))
-                }
+                } */}
             </div>
             {/* Wallet content */}
-            <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg flex flex-col p-2 gap-2 shadow-md">
+            {/* <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg flex flex-col p-2 gap-2 shadow-md">
                 <div className="w-full h-[15%]">
                     <h2 className="text-md font-semibold text-prussian-blue">WALLET</h2>
                 </div>
@@ -112,9 +112,9 @@ export default function Home() {
                         <p className="text-prussian-blue text-sm">Sync Your Accounts</p>
                     </div>
                 </button>
-            </div>
-            <div className="col-span-2 row-span-5 bg-gray-100 rounded-lg shadow-md">
-            </div>
+            </div> */}
+            {/* <div className="col-span-2 row-span-5 bg-gray-100 rounded-lg shadow-md">
+            </div> */}
         </>
     )
 }

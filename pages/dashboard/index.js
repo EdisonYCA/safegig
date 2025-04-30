@@ -12,9 +12,9 @@ export default function Dashboard() {
     const renderContent = () => {
         if (content == "Home") {
             return <Home/>
-        } else if (content == "FREELANCE JOBS") {
+        } else if (content == "Find Work") {
             return <Jobs/>
-        } else if (content == "FULL-TIME JOBS") {
+        } else if (content == "Find Jobs") {
             return <Gigs/>
         }
     }
@@ -24,8 +24,8 @@ export default function Dashboard() {
         <Navbar page="dashboard"/>
         <div className="h-screen w-screen grid grid-cols-10 grid-rows-12 gap-2 p-2 shadow-md">
             <ActionButtons/>
-            {/* 
-            {renderContent()} */}
+
+            {renderContent()}
         </div>
         </>
     )
