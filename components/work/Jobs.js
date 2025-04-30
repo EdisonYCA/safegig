@@ -6,9 +6,10 @@ import JobDetailModal from "./JobDetailModal";
 const JobDB = [
     {
         profile_pic: "/circle-user-filled.svg",
-        name: "Alex Ryan",
+        name: "0x89acbd",
         title: "Logo Editor's Needed",
         description: "We are seeking experienced Logo Editors to join our creative team. As a Logo Editor, you will have the opportunity to join this is a really really long descrition of a job. I need you to create an even better layout for the opportunity to. If you fail to, then you must and I mean MUST suggest a better account.",
+        timeline: "2 Weeks",
         price: 5000,
         stars: 3,
         id: 0
@@ -70,7 +71,7 @@ export default function Jobs(){
     ))
 
     return (
-        <div className="row-start-2 col-start-3 row-span-full col-span-full bg-gray-100 rounded-lg p-3 shadow-md gap-3 flex flex-col">
+        <div className="row-start-3 col-span-full row-span-full bg-gray-100 rounded-lg p-3 shadow-md gap-3 flex flex-col">
             <div className="col-span-full flex justify-center">
                 <div className="w-full flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 shadow-sm">
                     <Image
@@ -88,14 +89,15 @@ export default function Jobs(){
                     />
                 </div>
             </div>
-            <div className="w-full h-full flex flex-col overflow-y-auto gap-3">
+            <div className="w-full h-full flex overflow-y-auto gap-3">
                 {
-                    filteredJobs.map((job) => (
+                    filteredJobs.slice(0, 1).map((job) => (
                     <Job
                         key={job.id}
                         profile={job.profile_pic}
                         name={job.name}
                         title={job.title}
+                        timeline={job.timeline}
                         description={job.description}
                         price={job.price}
                         stars={job.stars}

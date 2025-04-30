@@ -1,8 +1,8 @@
 import Image from "next/image"
-export default function Job({profile, name, title, description, price, stars, onSeeMore}) {
+export default function Job({profile, name, title, description, price, stars, onSeeMore, timeline}) {
     return (
-        <div className="w-full w-1/4 bg-white rounded-lg shadow-md p-4">
-            <div className="w-full h-[30%] flex gap-2">
+        <div className="w-1/3 h-1/2 bg-gray-300 rounded-lg shadow-md p-4">
+            <div className="w-full h-[15%] bg-red-500 flex gap-2">
                     <Image
                         src={profile}
                         alt="profile picture"
@@ -26,16 +26,25 @@ export default function Job({profile, name, title, description, price, stars, on
                     </div>
                 </div>
             </div>
-            <div className="w-full h-full">
+            <div className="w-full ">
                 <h1 className="text-lg font-bold text-prussian-blue truncate-lines-2">{title}</h1>
                 <p className="text-md text-prussian-blue truncate-lines-2">{description}</p>
                 <div className="flex justify-between pt-2">
-                    <h2 className="text-lg font-bold text-ut-orange">${price}</h2>
-                    <button className="w-[10%] h-full rounded-lg shadow-lg bg-selective-yellow hover:scale-105"
+                    <div className="w-full flex justify-between flex">
+                        <div className="w-1/2">
+                            <h2 className="text-xl font-bold text-[#248232]">
+                                ${price}
+                            </h2>
+                            <h2 className="text-xl font-bold text-[#248232]">
+                                {timeline}
+                            </h2>
+                        </div>
+                        <button className="w-1/2 h-1/2 rounded-lg shadow-sm bg-ut-orange hover:scale-105"
                     onClick={onSeeMore}
                     >
                         See More
                     </button>
+                    </div>
                 </div>
             </div>
         </div>
