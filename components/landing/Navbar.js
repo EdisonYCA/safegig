@@ -1,8 +1,7 @@
 import { Disclosure, DisclosureButton} from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { useStateContext } from '@/context/StateContext'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useActiveAccount } from 'thirdweb/react'
 import { client } from '@/library/thirdwebClient'
 import {
@@ -11,6 +10,7 @@ import {
   getContract,
   defineChain
 } from "thirdweb";
+import { useStateContext } from '@/context/StateContext'
 
 
 const navigation = [
@@ -24,9 +24,12 @@ function classNames(...classes) {
 
 export default function Navbar({page}) {
   const account = useActiveAccount();
+  const {user, setUser} = useStateContext();
 
   useEffect(() => {
     if(!account) {return};
+
+    setUser(account.address)
 
     const registerUser = async () => {
         const contract = getContract({
@@ -80,6 +83,11 @@ export default function Navbar({page}) {
             {
               page == "dashboard" ? 
               <>
+              { user &&
+              <div>
+                <p>Welcome Back {user}</p>
+              </div>
+              }
               <Menu as="div" className="relative ml-3">
               <div>
                 <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
@@ -87,7 +95,7 @@ export default function Navbar({page}) {
                   <span className="sr-only">Open user menu</span>
                   <img
                     alt=""
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    src={`https://api.dicebear.com/9.x/pixel-art/svg?seed=${user ? user : "Jane"}`}
                     className="size-8 rounded-full"
                   />
                 </MenuButton>
@@ -102,14 +110,6 @@ export default function Navbar({page}) {
                     className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
                   >
                     Your Profile
-                  </a>
-                </MenuItem>
-                <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
-                  >
-                    Settings
                   </a>
                 </MenuItem>
                 <MenuItem>

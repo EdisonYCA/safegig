@@ -4,10 +4,10 @@ const Context = createContext();
 
 export function StateContext({ children }) {
     const [content, setContent] = useState("Home");
-    const [loggedIn, setLoggedIn] = useState(false);
+    const [user, setUser] = useState(null);
     
     return (
-        <Context.Provider value={{ content, setContent, loggedIn, setLoggedIn }}>
+        <Context.Provider value={{ content, setContent, user, setUser }}>
             {children}
         </Context.Provider>
     );
