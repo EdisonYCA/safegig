@@ -102,7 +102,7 @@ export default function Home() {
                 </div>
             </div>
             {/* Wallet content */}
-            {/* <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg flex flex-col p-2 gap-2 shadow-md">
+            <div className="col-span-2 row-span-7 bg-gray-100 rounded-lg flex flex-col p-2 gap-2 shadow-md">
                 <div className="w-full h-[15%]">
                     <h2 className="text-md font-semibold text-prussian-blue">WALLET</h2>
                 </div>
@@ -137,9 +137,9 @@ export default function Home() {
                         <p className="text-prussian-blue text-sm">Sync Your Accounts</p>
                     </div>
                 </button>
-            </div> */}
-            {/* <div className="col-span-2 row-span-5 bg-gray-100 rounded-lg shadow-md">
-            </div> */}
+            </div>
+            <div className="col-span-2 row-span-7 bg-gray-100 rounded-lg shadow-md">
+            </div>
         </>
     )
 }
