@@ -1,57 +1,98 @@
 import Image from "next/image";
+import { useState } from "react";
 
 export default function JobDetailModal({ job, onClose }) {
+    const [showForm, setShowForm] = useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [price, setPrice] = useState(job.price);
+    const [timeline, setTimeline] = useState(job.timeline);
+    const [message, setMessage] = useState("");
+
+    const handleSubmit = () => {
+        console.log({ price, timeline, message });
+
+        setShowConfirmation(true);
+        setShowForm(false)
+    };
+
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl relative">
-                <button
-                    onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl"
-                >
-                    <Image
-                        src="/s-remove.svg"
-                        alt="search icon"
-                        width={20}
-                        height={20}
-                        className="mr-2"
-                    />
-                </button>
-
-                <div className="flex items-center gap-4 mb-4">
-                    <Image
-                        src={job.profile_pic}
-                        alt="profile"
-                        width={50}
-                        height={50}
-                        className="rounded-full"
-                    />
-                    <div>
-                        <h2 className="text-lg font-bold text-prussian-blue">{job.name}</h2>
-                        <div className="flex">
-                            {[...Array(job.stars)].map((_, i) => (
-                                <Image
-                                    key={i}
-                                    src="/star-2.svg"
-                                    alt="star icon"
-                                    width={12}
-                                    height={12}
-                                    className="mr-1"
-                                />
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <h1 className="text-xl font-bold text-prussian-blue mb-2">{job.title}</h1>
-                <p className="text-md text-gray-700 mb-4">{job.description}</p>
-                <div className="flex justify-between pt-2">
-                    <h2 className="text-lg font-bold text-ut-orange">${job.price}</h2>
-                    <button className="w-[20%] h-full rounded-lg shadow-lg bg-red-500 bg-selective-yellow hover:scale-105"
+            <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+                <div className="bg-prussian-blue rounded-2xl shadow-xl p-6 w-full max-w-lg relative flex flex-col gap-4">
+                                    <button
+                        onClick={onClose}
+                        className="absolute top-4 right-4 text-white hover:text-ut-orange transition"
                     >
-                        Interested
+                        <Image
+                            src="/s-remove.svg"
+                            alt="close icon"
+                            width={24}
+                            height={24}
+                        />
                     </button>
+                    {!showConfirmation && (
+                        <>
+                            <div>
+                                <h1 className="text-2xl font-bold text-white">{job.title}</h1>
+                                <p className="text-base text-white leading-relaxed">{job.description}</p>
+                            </div>
+                        {!showForm ? (
+                            <div className="flex justify-end pt-4">
+                                <button
+                                    className="bg-ut-orange text-white font-semibold px-6 py-2 rounded-xl hover:scale-105 transition"
+                                    onClick={() => setShowForm(true)}
+                                >
+                                    Interested
+                                </button>
+                            </div>
+                        ) : (
+                            <form className="flex flex-col gap-3 pt-4">
+                                <input
+                                    type="number"
+                                    placeholder="Propose a new price"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    className="bg-white rounded-lg px-4 py-2 text-sm text-black"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Propose a new timeline"
+                                    value={timeline}
+                                    onChange={(e) => setTimeline(e.target.value)}
+                                    className="bg-white rounded-lg px-4 py-2 text-sm text-black"
+                                />
+                                <textarea
+                                    placeholder="Leave a message"
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    className="bg-white rounded-lg px-4 py-2 text-sm text-black"
+                                    rows={3}
+                                />
+                                <div className="flex justify-between pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowForm(false)}
+                                        className="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:scale-105 transition"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleSubmit}
+                                        className="bg-ut-orange text-white font-semibold px-4 py-2 rounded-lg hover:scale-105 transition"
+                                    >
+                                        Submit Proposal
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+        </>
+    )}
+                {showConfirmation && (
+                    <p className="text-green-500 text-center font-bold">
+                        Proposal submitted successfully!
+                    </p>
+                )}
                 </div>
             </div>
-        </div>
-    );
+        );
 }

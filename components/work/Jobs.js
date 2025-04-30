@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Job from "./Job";
+import WorkPosting from "./WorkPosting";
 import { useEffect, useState } from "react";
 import JobDetailModal from "./JobDetailModal";
 import { getAllWork } from '@/library/db/work'
@@ -45,15 +45,15 @@ export default function Jobs(){
             <div className="w-full h-full flex overflow-y-auto gap-3">
                 {work ?
                     work.map((w) => (
-                    <Job
+                    <WorkPosting
                         key={w.id}
-                        profile={"/cloud.svg"}
+                        client={w.client}
                         name={w.client}
                         title={w.title}
                         timeline={w.timeline}
                         description={w.description}
                         price={w.price}
-                        stars={2}
+                        stars={5}
                         onSeeMore={() => setSelectedJob(w)}
                     />
                     )) : null
