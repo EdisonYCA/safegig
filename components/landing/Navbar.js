@@ -1,19 +1,64 @@
 import { Disclosure, DisclosureButton} from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { useStateContext } from '@/context/StateContext'
+import { useEffect } from 'react'
+import { useActiveAccount } from 'thirdweb/react'
+import { client } from '@/library/thirdwebClient'
+import {
+  prepareContractCall,
+  sendTransaction,
+  getContract,
+  defineChain
+} from "thirdweb";
+
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', current: false },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
 ]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
+
 export default function Navbar({page}) {
+  const account = useActiveAccount();
+
+  useEffect(() => {
+    if(!account) {return};
+
+    const registerUser = async () => {
+        const contract = getContract({
+          client,
+          chain: defineChain(97),
+          address: "0x97889EF0B1C33236975F56f33704DafCF4C92FC5",
+        });
+
+        const transaction = await prepareContractCall({
+          contract,
+          method: "function createNewUser()",
+          params: [],
+        });
+        
+        try {
+          const { transactionHash } = await sendTransaction({
+            transaction,
+            account,
+          });
+        } catch (error) {
+          const message = error?.message || "";
+
+          if (!message.includes("User already registered")) {
+            alert("Transaction failed: " + message);
+          } 
+        }
+    }
+
+    registerUser();
+  }, [account])
+
+
   return (
     <Disclosure as="nav" className="bg-sky-blue">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -77,25 +122,29 @@ export default function Navbar({page}) {
                 </MenuItem>
               </MenuItems>
             </Menu>
-            </> : <div className="hidden sm:ml-6 sm:block">
-              <div className="flex space-x-4">
-                {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    aria-current={item.current ? 'page' : undefined}
-                    className={classNames(
-                      item.current ? 'bg-gray-900 text-white' : 'text-white hover:bg-gray-700 hover:text-white',
-                      'rounded-md px-3 py-2 text-sm font-medium',
-                    )}
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </div>
+            </> : account ? <div className="hidden sm:ml-6 sm:block">
+                  <div className="flex space-x-4">
+                    {navigation.map((item) => (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        aria-current={item.current ? 'page' : undefined}
+                        className={classNames(
+                          item.current ? 'bg-gray-900 text-white' : 'text-white hover:bg-gray-700 hover:text-white',
+                          'rounded-md px-3 py-2 text-sm font-medium',
+                        )}
+                      >
+                        {item.name}
+                      </a>
+                    ))}
+                    <button
+                      className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                    >
+                      Log Out 
+                    </button>
+                  </div>
+              </div> : null
             }
-            
           </div>
         </div>
       </div>

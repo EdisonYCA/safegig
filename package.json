@@ -12,9 +12,13 @@
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@lottiefiles/dotlottie-react": "^0.13.3",
+    "cookie": "^1.0.2",
     "next": "15.2.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "styled-components": "^6.1.17",
+    "thirdweb": "^5.96.1",
+    "web3": "^4.16.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
