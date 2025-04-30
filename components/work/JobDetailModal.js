@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useState } from "react";
+import { useActiveAccount } from "thirdweb/react";
 
 export default function JobDetailModal({ job, onClose }) {
     const [showForm, setShowForm] = useState(false);
@@ -7,12 +8,17 @@ export default function JobDetailModal({ job, onClose }) {
     const [price, setPrice] = useState(job.price);
     const [timeline, setTimeline] = useState(job.timeline);
     const [message, setMessage] = useState("");
+    const account = useActiveAccount();
 
-    const handleSubmit = () => {
-        console.log({ price, timeline, message });
-
-        setShowConfirmation(true);
-        setShowForm(false)
+    const handleSubmit = async () => {
+        try {
+            await updateProposals(job.id, account.address, price, timeline, message);
+    
+            setShowForm(false);
+            setShowConfirmation(true);
+        } catch (error) {
+            console.error("Error submitting proposal:", error);
+        }
     };
 
     return (
@@ -88,7 +94,7 @@ export default function JobDetailModal({ job, onClose }) {
         </>
     )}
                 {showConfirmation && (
-                    <p className="text-green-500 text-center font-bold">
+                    <p className="text-white text-center font-bold">
                         Proposal submitted successfully!
                     </p>
                 )}

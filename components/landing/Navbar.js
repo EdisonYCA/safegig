@@ -11,7 +11,7 @@ import {
   defineChain
 } from "thirdweb";
 import { useStateContext } from '@/context/StateContext'
-
+import { registerUserFb } from '@/library/db/work'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', current: false },
@@ -27,41 +27,42 @@ export default function Navbar({page}) {
   const {user, setUser} = useStateContext();
 
   useEffect(() => {
-    if(!account) {return};
-
-    setUser(account.address)
-
+    if (!account) return;
+  
+    setUser(account.address);
+  
     const registerUser = async () => {
-        const contract = getContract({
-          client,
-          chain: defineChain(97),
-          address: "0x97889EF0B1C33236975F56f33704DafCF4C92FC5",
+      await registerUserFb(account.address);
+  
+      const contract = getContract({
+        client,
+        chain: defineChain(97),
+        address: "0x97889EF0B1C33236975F56f33704DafCF4C92FC5",
+      });
+  
+      const transaction = await prepareContractCall({
+        contract,
+        method: "function createNewUser()",
+        params: [],
+      });
+  
+      try {
+        const { transactionHash } = await sendTransaction({
+          transaction,
+          account,
         });
-
-        const transaction = await prepareContractCall({
-          contract,
-          method: "function createNewUser()",
-          params: [],
-        });
-        
-        try {
-          const { transactionHash } = await sendTransaction({
-            transaction,
-            account,
-          });
-
-        } catch (error) {
-          const message = error?.message || "";
-
-          if (!message.includes("User already registered")) {
-            alert("Transaction failed: " + message);
-          } 
+      } catch (error) {
+        const message = error?.message || "";
+  
+        if (!message.includes("User already registered")) {
+          alert("Transaction failed: " + message);
         }
-    }
-
+      }
+    };
+  
     registerUser();
 
-  }, [account])
+  }, [account]);
 
 
   return (
