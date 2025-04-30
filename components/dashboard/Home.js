@@ -1,11 +1,6 @@
 import Image from "next/image";
 
 export default function Home() {
-    const gigBtns = [
-        { name: 'ACTIVE GIGS', current: true },
-        { name: 'COMPLETED GIGS', current: false },
-    ]
-
     const gigs = [
         {
         name: "Web Design",
@@ -45,36 +40,66 @@ export default function Home() {
         },
     ];
 
+    const setActiveButton = (btn) => {
+        if (btn === 0) {
+            gigBtns[0].active = false
+            gigBtns[1].active = true
+        } else {
+            gigBtns[0].active = true
+            gigBtns[1].active = false
+        }
+    }
+
+    const fetchWorkReq = () => {
+        setActiveButton(0)
+
+        // interact with user smart contract to fetch all of this users work requests
+    }
+
+    const fetchJobReq = () => {
+        setActiveButton(1)
+
+        // interact with user smart contract to fetch all of this users work requests
+    }
+
+    let gigBtns = [
+        { name: 'Work Requests', current: true, fc: {fetchWorkReq}},
+        { name: 'Job Requests', current: false, fc: {fetchJobReq}}
+    ]
+
     return (
         <>
         {/* gigs */}
-        <div className="col-span-7 row-start-3 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3 shadow-md">
-                {/* <div className="flex w-full h-[13%] rounded-lg bg-gray-200 p-1 shadow-sm gap-1">
+        <div className="col-span-8 row-start-3 bg-gray-200 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3 shadow-md">
+                <div className="flex w-full h-[13%] rounded-lg gap-1">
                     {
                         gigBtns.map((btn) => (
                             <button
+                              onClick={() => {btn.fc}}
                               key={btn.name}
-                              className={`h-full w-1/2 rounded-lg transition-all duration-200 ease-in-out
+                              className={`h-full w-1/2 text-lg rounded-lg transition-all duration-200 ease-in-out
                                 ${btn.current
-                                  ? "bg-prussian-blue text-white shadow-sm"
+                                  ? "bg-ut-orange text-white shadow-sm"
                                   : "text-prussian-blue hover:white hover:shadow-md"}`}
                             >
                               {btn.name}
                             </button>
                           ))
                     }
-                </div> */}
+                </div>
 
                 {/* Gig Content */}
-                {/* {
-                    gigs.slice(0, 4).map((gig) => (
-                        <div className="w-full rounded-lg bg-gray-200 shadow-sm p-4 flex flex-col gap-1 border border-gray-200">
-                            <h2 className="text-md font-semibold text-prussian-blue">{gig.name}</h2>
-                            <p className="text-gray-700">{gig.description}</p>
-                            <div className="text-lg font-bold text-orange-600">{gig.price}</div>
-                        </div>
-                    ))
-                } */}
+                <div className="w-full h-[87%] flex p-2 gap-1">
+                    {
+                        gigs.slice(0,4).map((gig) => (
+                            <div className="w-1/4 h-1/2 rounded-lg bg-gray-300 shadow-sm p-4 flex flex-col gap-1">
+                                <h2 className="text-md font-semibold text-prussian-blue">{gig.name}</h2>
+                                <p className="text-gray-700">{gig.description}</p>
+                                <div className="text-lg font-bold text-orange-600">{gig.price}</div>
+                            </div>
+                        ))
+                    }
+                </div>
             </div>
             {/* Wallet content */}
             {/* <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg flex flex-col p-2 gap-2 shadow-md">

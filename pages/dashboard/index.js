@@ -22,7 +22,7 @@ export default function Dashboard() {
     return (
         <>
         <Navbar page="dashboard"/>
-        <div className="h-screen w-screen grid grid-cols-10 grid-rows-12 gap-2 p-2 shadow-md">
+        <div className="h-screen w-screen grid grid-cols-10 grid-rows-15 gap-2 p-2 shadow-md">
             <ActionButtons/>
 
             {renderContent()}

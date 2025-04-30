@@ -20,7 +20,7 @@ export default function ActionButtons(){
                         onClick={() => (setContent(btn.name))}
                         key={btn.name}
                         className={
-                            `rounded-lg flex justify-center text-lg p-9 items-center shadow-md hover:scale-101 hover:shadow-lg transition-shadow duration-200 ${btn.colors}`
+                            `row-span-2 rounded-lg flex justify-center text-lg items-center shadow-md hover:scale-101 hover:shadow-lg transition-shadow duration-200 ${btn.colors}`
                         }                       
                         >
                         {btn.icon ? (
