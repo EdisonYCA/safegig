@@ -1,10 +1,6 @@
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { ConnectButton } from 'thirdweb/react'
-import { client } from '@/library/thirdwebClient'
-import { wallets } from '@/library/thirdwebClient'
-import { darkTheme } from "thirdweb/react";
-import { defineChain } from "thirdweb";
 import { useStateContext } from '@/context/StateContext';
+import { ConnectButtonWrapper } from '../ConnectButtonWrapper';
 
 
 
@@ -33,23 +29,7 @@ export default function Section(
                     <>
                         <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold max-w-2xl">{title}</h1>
                         <p className="text-2xl max-w-2xl">{description}</p>
-                        <ConnectButton
-                            client={client}
-                            accountAbstraction={{
-                                chain: defineChain(97),
-                                sponsorGas: true,
-                            }}
-                            wallets={wallets}
-                            theme={darkTheme({
-                                colors: {
-                                primaryButtonBg: "hsl(32, 100%, 49%)",
-                                primaryButtonText: "hsl(0, 0%, 100%)",
-                                },
-                                fontFamily: 'Outfit'
-                            })}
-                            connectModal={{ size: "compact", showThirdwebBranding: false }}
-                            connectButton={{ label: "Get Started" }}
-                        />
+                        <ConnectButtonWrapper/>
                     </>
                     }
                 </div>

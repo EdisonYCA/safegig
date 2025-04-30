@@ -12,6 +12,7 @@ import {
 } from "thirdweb";
 import { useStateContext } from '@/context/StateContext'
 import { registerUserFb } from '@/library/db/work'
+import { ConnectButtonWrapper } from '../ConnectButtonWrapper'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', current: false },
@@ -29,8 +30,9 @@ export default function Navbar({page}) {
   useEffect(() => {
     if (!account) return;
   
-    setUser(account.address);
-  
+    setUser(account);
+    console.log(account)
+
     const registerUser = async () => {
       await registerUserFb(account.address);
   
@@ -86,11 +88,7 @@ export default function Navbar({page}) {
             {
               page == "dashboard" ? 
               <>
-              { user &&
-              <div>
-                <p>Welcome Back {user}</p>
-              </div>
-              }
+              <ConnectButtonWrapper/>
               <Menu as="div" className="relative ml-3">
               <div>
                 <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">

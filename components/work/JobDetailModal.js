@@ -1,6 +1,9 @@
 import Image from "next/image";
 import { useState } from "react";
+import { updateProposals } from "@/library/db/work";
+import { useStateContext } from "@/context/StateContext";
 import { useActiveAccount } from "thirdweb/react";
+
 
 export default function JobDetailModal({ job, onClose }) {
     const [showForm, setShowForm] = useState(false);
@@ -12,6 +15,7 @@ export default function JobDetailModal({ job, onClose }) {
 
     const handleSubmit = async () => {
         try {
+            console.log(account)
             await updateProposals(job.id, account.address, price, timeline, message);
     
             setShowForm(false);
