@@ -6,6 +6,7 @@ import Jobs from "@/components/work/Jobs"
 import Gigs from "@/components/work/Gigs"
 import { useStateContext } from "@/context/StateContext"
 
+
 export default function Dashboard() {
     const {content} = useStateContext();
 

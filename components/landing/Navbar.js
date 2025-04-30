@@ -49,6 +49,7 @@ export default function Navbar({page}) {
             transaction,
             account,
           });
+
         } catch (error) {
           const message = error?.message || "";
 
@@ -59,6 +60,7 @@ export default function Navbar({page}) {
     }
 
     registerUser();
+
   }, [account])
 
 
