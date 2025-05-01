@@ -1,4 +1,4 @@
-import { getDocs, collection, doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { getDocs, collection, doc, getDoc, setDoc, updateDoc, arrayUnion, addDoc } from "firebase/firestore";
 import { app } from "./firebase";
 import { getFirestore } from "firebase/firestore";
 
@@ -50,4 +50,17 @@ export async function updatePendingWork(jobId, address) {
     await updateDoc(userRef, {
         pendingWork: arrayUnion(jobId)
   });
+}
+
+export async function postWork(client, price, timeline, title, description) {
+  const workRef = collection(db, "work");
+    await addDoc(workRef, {
+        client: client,
+        price: price,
+        timeline: timeline,
+        title: title,
+        description: description,
+        worker: null,
+        proposals: [],
+        });
 }
