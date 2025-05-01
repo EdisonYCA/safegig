@@ -1,43 +1,15 @@
 import Image from "next/image";
 
 export default function Home() {
-    const gigs = [
+    const workRequests = [
         {
-        name: "Web Design",
-        description: "I will create a modern and responsive web design tailored to your needs.",
-        price: "$1500",
-        current: true,
-        },
-        {
-        name: "Logo Creation",
-        description: "Get a unique and professional logo to represent your brand.",
-        price: "$300",
-        current: false,
-        },
-        {
-        name: "SEO Optimization",
-        description: "Boost your site's ranking with advanced SEO techniques.",
-        price: "$800",
-        current: false,
-        },
-        {
-        name: "App UI/UX",
-        description: "I’ll design a sleek and user-friendly mobile app interface.",
-        price: "$1200",
-        current: false,
-        },
-        {
-        name: "Landing Page",
-        description: "Custom landing page optimized for conversions and mobile.",
-        price: "$950",
-        current: false,
-        },
-        {
-        name: "E-commerce Setup",
-        description: "Complete online store setup with payment integration.",
-        price: "$2000",
-        current: false,
-        },
+        title: "Web Design",
+        originalPrice: "1500",
+        proposedPrice: "3000",
+        worker: "0x98738E43a9F6BD44f8c9ED2a635ff08A0cB91087",
+        originalTimeline: "5 Days",
+        proposedTimeline: "10 Days"
+        }
     ];
 
     const setActiveButton = (btn) => {
@@ -69,7 +41,7 @@ export default function Home() {
 
     return (
         <>
-        {/* gigs */}
+        {/* Request Buttons */}
         <div className="col-span-8 row-start-3 bg-gray-200 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3 shadow-md">
                 <div className="flex w-full h-[13%] rounded-lg gap-1">
                     {
@@ -88,16 +60,58 @@ export default function Home() {
                     }
                 </div>
 
-                {/* Gig Content */}
-                <div className="w-full h-[87%] flex p-2 gap-1">
-                    {
-                        gigs.slice(0,4).map((gig) => (
-                            <div className="w-1/4 h-1/2 rounded-lg bg-gray-300 shadow-sm p-4 flex flex-col gap-1">
-                                <h2 className="text-md font-semibold text-prussian-blue">{gig.name}</h2>
-                                <p className="text-gray-700">{gig.description}</p>
-                                <div className="text-lg font-bold text-orange-600">{gig.price}</div>
+                {/* Work Request Content */}
+                <div className="w-full h-1/2 flex flex-wrap">
+                {
+                    workRequests.slice(0, 4).map((w, i) => (
+                        <div key={i} className="w-1/3 bg-prussian-blue rounded-2xl shadow-lg p-5 flex flex-col justify-between space-y-4">
+                        <div className="space-y-2">
+                            <h1 className="text-xl font-bold text-white">{w.title}</h1>
+                            <p className="text-white text-sm">
+                                <span className="font-semibold text-gray-300">Proposed by:</span> {w.worker.slice(0, -7)}
+                            </p>
+                            <div className="mt-2 space-y-1">
+                            <div className="flex justify-between items-center">
+                                <p className="text-white text-sm">Original Price:</p>
+                                <p className="text-white line-through text-sm">${w.originalPrice}</p>
                             </div>
-                        ))
+                            <div className="flex justify-between items-center">
+                                <p className="text-white text-sm">Proposed Price:</p>
+                                <p className="text-ut-orange font-semibold text-sm">${w.proposedPrice}</p>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <p className="text-white text-sm">Original Timeline:</p>
+                                <p className="text-white line-through text-sm">{w.originalTimeline}</p>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <p className="text-white text-sm">Proposed Timeline:</p>
+                                <p className="text-ut-orange font-semibold text-sm">{w.proposedTimeline}</p>
+                            </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                            <button
+                            className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition"
+                            onClick={() => {/* Accept logic */}}
+                            >
+                            Accept
+                            </button>
+                            <button
+                            className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition"
+                            onClick={() => {/* Decline logic */}}
+                            >
+                            Decline
+                            </button>
+                            <button
+                            className="flex-1 rounded-lg py-2 text-sm font-semibold bg-ut-orange hover:scale-105 transition"
+                            onClick={() => {/* Navigate to original gig */}}
+                            >
+                            View Work
+                            </button>
+                        </div>
+                        </div>
+                    ))
                     }
                 </div>
             </div>
