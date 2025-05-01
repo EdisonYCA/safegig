@@ -10,6 +10,7 @@ import { useEffect } from "react"
 import { useActiveAccount } from "thirdweb/react"
 import PostWork from "@/components/work/PostWork"
 import ActiveRequests from "@/components/dashboard/ActiveRequests"
+import CompletedRequests from "@/components/dashboard/CompletedRequests"
 
 
 export default function Dashboard() {
@@ -46,9 +47,11 @@ export default function Dashboard() {
                         <ActiveRequests />
                     </div>
                 </div>
-                <div className="bg-gray-100 rounded-lg shadow-md p-4">
-                    <h3 className="text-lg font-semibold mb-2 text-prussian-blue">Completed/Rejected</h3>
-                    {/* Completed/Rejected work/job requests will be displayed here */}
+                <div className="bg-ut-orange rounded-lg shadow-md p-4 flex flex-col">
+                    <h3 className="text-lg font-semibold mb-2 text-white">Completed/Rejected</h3>
+                    <div className="overflow-y-auto flex-1">
+                        <CompletedRequests />
+                    </div>
                 </div>
             </div>
         </div>
