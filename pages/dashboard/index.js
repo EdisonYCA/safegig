@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react"
 import { useActiveAccount } from "thirdweb/react"
 import PostWork from "@/components/work/PostWork"
+import ActiveRequests from "@/components/dashboard/ActiveRequests"
 
 
 export default function Dashboard() {
@@ -38,6 +39,18 @@ export default function Dashboard() {
         <div className="h-screen w-screen grid grid-cols-10 grid-rows-16 gap-2 p-2 shadow-md">
             <ActionButtons/>
             {renderContent()}
+            <div className="col-start-9 col-span-2 row-start-3 row-span-14 grid grid-rows-2 gap-2">
+                <div className="bg-prussian-blue rounded-lg shadow-md p-4 flex flex-col">
+                    <h3 className="text-lg font-semibold mb-2 text-white">Active Requests</h3>
+                    <div className="overflow-y-auto flex-1">
+                        <ActiveRequests />
+                    </div>
+                </div>
+                <div className="bg-gray-100 rounded-lg shadow-md p-4">
+                    <h3 className="text-lg font-semibold mb-2 text-prussian-blue">Completed/Rejected</h3>
+                    {/* Completed/Rejected work/job requests will be displayed here */}
+                </div>
+            </div>
         </div>
         </>
     )

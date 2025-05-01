@@ -1,13 +1,13 @@
 import Image from "next/image";
-import { useState } from "react";
-import { getWorkRequests } from "@/library/db/work";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { getWorkRequests, getJobRequests, updateProposalStatus } from "@/library/db/work";
 import { useActiveAccount } from "thirdweb/react";
 import { useRouter } from "next/router";
 
 export default function Home() {
   const [activeButton, setActiveButton] = useState(0);
   const [workRequests, setWorkRequests] = useState([]);
+  const [jobRequests, setJobRequests] = useState([]);
   const account = useActiveAccount();
   const router = useRouter();
 
@@ -19,30 +19,21 @@ export default function Home() {
       return;
     }
 
-    const fetchWorkRequests = async () => {
+    const fetchData = async () => {
       try {
         const workRequests = await getWorkRequests(account.address);
+        const jobRequests = await getJobRequests(account.address);
         setWorkRequests(workRequests);
-        console.log("Work Requests:", workRequests);
+        setJobRequests(jobRequests);
       } catch (error) {
-        console.error('Error fetching work requests:', error);
+        console.error('Error fetching data:', error);
         setWorkRequests([]);
+        setJobRequests([]);
       }
     };
     
-    fetchWorkRequests();
+    fetchData();
   }, [account]);
-
-  const jobRequests = [
-    {
-      title: "Logo Design",
-      originalPrice: "500",
-      proposedPrice: "750",
-      worker: "0xDEADBEEF1234567890",
-      originalTimeline: "2 Days",
-      proposedTimeline: "3 Days"
-    }
-  ];
 
   const gigBtns = [
     { name: "Work Requests", id: 0 },
@@ -51,6 +42,30 @@ export default function Home() {
 
   const getActiveData = () => {
     return activeButton === 0 ? workRequests : jobRequests;
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'accepted':
+        return 'bg-green-500';
+      case 'rejected':
+        return 'bg-red-500';
+      default:
+        return 'bg-yellow-500';
+    }
+  };
+
+  const handleDecline = async (jobId, proposerWallet) => {
+    try {
+      console.log(jobId, proposerWallet);
+      await updateProposalStatus(jobId, proposerWallet, "rejected");
+      const updatedWorkRequests = await getWorkRequests(account.address);
+      const jobRequests = await getJobRequests(account.address);
+      setWorkRequests(updatedWorkRequests);
+      setJobRequests(jobRequests);
+    } catch (error) {
+      console.error('Error declining proposal:', error);
+    }
   };
 
   return (
@@ -73,7 +88,7 @@ export default function Home() {
           ))}
         </div>
         {/* Work Request & Job Request */}
-        <div className="w-full h-1/2 flex flex-wrap">
+        <div className="w-full h-1/2 flex flex-wrap gap-3">
           {getActiveData().length === 0 ? (
             <div className="w-full h-full flex items-center justify-center">
               <p className="text-gray-500 text-lg">
@@ -90,13 +105,13 @@ export default function Home() {
                   <h1 className="text-xl font-bold text-white">{w.title}</h1>
                   <div className="flex gap-2 mb-3">
                     <img
-                      src={`https://api.dicebear.com/9.x/pixel-art/svg?seed=${w.proposerWallet}`}
+                      src={`https://api.dicebear.com/9.x/pixel-art/svg?seed=${activeButton === 0 ? w.proposerWallet : w.client}`}
                       alt="profile"
                       className="size-8 rounded-full"
                     />
                     <div className="mb-3">
                       <h2 className="text-sm font-semibold text-gray-300">
-                        {w.proposerWallet.slice(0, -15)}...
+                        {activeButton === 0 ? w.proposerWallet.slice(0, -15) : w.client.slice(0, -15)}...
                       </h2>
                       <div className="flex">
                         {[...Array(5)].map((_, i) => (
@@ -146,17 +161,26 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition">
-                    Accept
-                  </button>
-                  <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition">
-                    Decline
-                  </button>
-                  <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-ut-orange hover:scale-105 transition">
-                    View Work
-                  </button>
-                </div>
+                {activeButton === 0 ? (
+                  <div className="flex gap-2">
+                    <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition">
+                      Accept
+                    </button>
+                    <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition"
+                      onClick={() => handleDecline(w.id, w.proposerWallet)}>
+                      Decline
+                    </button>
+                    <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-ut-orange hover:scale-105 transition">
+                      View Work
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex justify-center">
+                    <span className={`px-4 py-2 rounded-lg text-white font-semibold ${getStatusColor(w.status)}`}>
+                      {w.status.charAt(0).toUpperCase() + w.status.slice(1)}
+                    </span>
+                  </div>
+                )}
               </div>
             ))
           )}

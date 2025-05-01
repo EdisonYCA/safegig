@@ -39,7 +39,7 @@ export async function updateProposals(jobId, address, price, timeline, message) 
             proposedPrice: price,
             proposedTimeline: timeline,
             message: message,
-            submittedAt: new Date().toISOString()
+            status: "pending"
         })
     });
 }
@@ -55,7 +55,8 @@ export async function updatePostedWork(jobId, address) {
 export async function updatePendingWork(jobId, address) {
   const userRef = doc(db, "users", address);
     await updateDoc(userRef, {
-        pendingWork: arrayUnion(jobId)
+        pendingWork: arrayUnion(jobId),
+        pendingJob: arrayUnion(jobId)
   });
 }
 
@@ -88,17 +89,80 @@ export async function getWorkRequests(address) {
   for (const jobId of postedWork) {
     const jobRef = doc(db, 'work', jobId);
     const jobSnap = await getDoc(jobRef);
-    if (jobSnap.data().proposals.length > 0) {
+    if (jobSnap.exists() && jobSnap.data().proposals.length > 0) {
       const jobData = jobSnap.data();
       const proposalsWithJobInfo = jobData.proposals.map(proposal => ({
         ...proposal,
         title: jobData.title,
         originalPrice: jobData.price,
-        originalTimeline: jobData.timeline
+        originalTimeline: jobData.timeline,
+        id: jobId
       }));
       workRequests.push(...proposalsWithJobInfo);
     }
   }
 
   return workRequests;
+}
+
+export async function getJobRequests(address) {
+  const docRef = doc(db, 'users', address);
+  const docSnap = await getDoc(docRef);
+  if (!docSnap.exists()) {
+    return [];
+  }
+  const pendingJobs = docSnap.data().pendingJob;
+  if (pendingJobs.length === 0) {
+    return [];
+  }
+  const jobRequests = [];
+  for (const jobId of pendingJobs) {
+    const jobRef = doc(db, 'work', jobId);
+    const jobSnap = await getDoc(jobRef);
+    if (jobSnap.exists()) {
+      const jobData = jobSnap.data();
+      const proposal = jobData.proposals.find(p => p.proposerWallet === address);
+      if (proposal) {
+        jobRequests.push({
+          id: jobId,
+          title: jobData.title,
+          client: jobData.client,
+          originalPrice: jobData.price,
+          proposedPrice: proposal.proposedPrice,
+          originalTimeline: jobData.timeline,
+          proposedTimeline: proposal.proposedTimeline,
+          message: proposal.message,
+          status: proposal.status
+        });
+      }
+    }
+  }
+  return jobRequests;
+}
+
+export async function updateProposalStatus(jobId, proposerWallet, status) {
+  if (!jobId || !proposerWallet) {
+    throw new Error("Missing required parameters: jobId and proposerWallet are required");
+  }
+
+  const jobRef = doc(db, "work", jobId);
+  const jobSnap = await getDoc(jobRef);
+  
+  if (!jobSnap.exists()) {
+    throw new Error("Job not found");
+  }
+  
+  const jobData = jobSnap.data();
+  if (!jobData.proposals || !Array.isArray(jobData.proposals)) {
+    throw new Error("Invalid job data: proposals array not found");
+  }
+  
+  const proposals = jobData.proposals.map(proposal => {
+    if (proposal.proposerWallet === proposerWallet) {
+      return { ...proposal, status };
+    }
+    return proposal;
+  });
+  
+  await updateDoc(jobRef, { proposals });
 }
