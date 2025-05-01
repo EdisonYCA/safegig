@@ -44,6 +44,13 @@ export async function updateProposals(jobId, address, price, timeline, message) 
     });
 }
 
+export async function updatePostedWork(jobId, address) {
+  const jobRef = doc(db, "users", address);
+    await updateDoc(jobRef, {
+        postedWork: arrayUnion(jobId)
+    });
+}
+
 
 export async function updatePendingWork(jobId, address) {
   const userRef = doc(db, "users", address);
@@ -54,7 +61,7 @@ export async function updatePendingWork(jobId, address) {
 
 export async function postWork(client, price, timeline, title, description) {
   const workRef = collection(db, "work");
-    await addDoc(workRef, {
+    const docRef = await addDoc(workRef, {
         client: client,
         price: price,
         timeline: timeline,
@@ -63,4 +70,35 @@ export async function postWork(client, price, timeline, title, description) {
         worker: null,
         proposals: [],
         });
+    
+    return docRef.id;
+}
+
+export async function getWorkRequests(address) {
+  const docRef = doc(db, 'users', address);
+  const docSnap = await getDoc(docRef);
+  if (!docSnap.exists()) {
+    return [];
+  }
+  const postedWork = docSnap.data().postedWork;
+  if (postedWork.length === 0) {
+    return [];
+  }
+  const workRequests = [];
+  for (const jobId of postedWork) {
+    const jobRef = doc(db, 'work', jobId);
+    const jobSnap = await getDoc(jobRef);
+    if (jobSnap.data().proposals.length > 0) {
+      const jobData = jobSnap.data();
+      const proposalsWithJobInfo = jobData.proposals.map(proposal => ({
+        ...proposal,
+        title: jobData.title,
+        originalPrice: jobData.price,
+        originalTimeline: jobData.timeline
+      }));
+      workRequests.push(...proposalsWithJobInfo);
+    }
+  }
+
+  return workRequests;
 }

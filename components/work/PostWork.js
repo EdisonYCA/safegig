@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { postWork } from '@/library/db/work';
+import { postWork, updatePostedWork } from '@/library/db/work';
 import { useActiveAccount } from 'thirdweb/react';
+import { useStateContext } from '@/context/StateContext';
 
 export default function PostWork(){
     const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ export default function PostWork(){
         timeline: ''
     });
     const [confirmation, setConfirmation] = useState(false);
+    const {setContent} = useStateContext();
 
     const account = useActiveAccount();
 
@@ -24,15 +26,23 @@ export default function PostWork(){
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await postWork(account, formData.payment, formData.timeline, formData.title, formData.description);
-            // Reset form
+            const jobId = await postWork(account.address, formData.payment, formData.timeline,
+                formData.title, formData.description
+            );
+
+            console.log(jobId);
+            
+            await updatePostedWork(jobId, account.address);
+
+            setConfirmation(true);
+
             setFormData({
                 title: '',
                 description: '',
                 payment: '',
                 timeline: ''
             });
-            setConfirmation(true);
+            
         } catch (error) {
             console.error('Error posting work:', error);
             alert('Failed to post work. Please try again.');

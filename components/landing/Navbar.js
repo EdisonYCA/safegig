@@ -31,7 +31,6 @@ export default function Navbar({page}) {
     if (!account) return;
   
     setUser(account);
-    console.log(account)
 
     const registerUser = async () => {
       await registerUserFb(account.address);
