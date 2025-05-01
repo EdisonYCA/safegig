@@ -8,6 +8,7 @@ import { useStateContext } from "@/context/StateContext"
 import { useRouter } from "next/router";
 import { useEffect } from "react"
 import { useActiveAccount } from "thirdweb/react"
+import PostWork from "@/components/work/PostWork"
 
 
 export default function Dashboard() {
@@ -16,12 +17,14 @@ export default function Dashboard() {
     const router = useRouter();
 
     const renderContent = () => {
-        if (content == "Home") {
+        if (content === "Home") {
             return <Home/>
-        } else if (content == "Find Work") {
+        } else if (content === "Find Work") {
             return <Jobs/>
-        } else if (content == "Find Jobs") {
+        } else if (content === "Find Jobs") {
             return <Gigs/>
+        } else if (content === "Post Work") {
+            return <PostWork/>
         }
     }
 
