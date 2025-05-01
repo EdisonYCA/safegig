@@ -65,51 +65,73 @@ export default function Home() {
                 {
                     workRequests.slice(0, 4).map((w, i) => (
                         <div key={i} className="w-1/3 bg-prussian-blue rounded-2xl shadow-lg p-5 flex flex-col justify-between space-y-4">
-                        <div className="space-y-2">
-                            <h1 className="text-xl font-bold text-white">{w.title}</h1>
-                            <p className="text-white text-sm">
-                                <span className="font-semibold text-gray-300">Proposed by:</span> {w.worker.slice(0, -7)}
-                            </p>
-                            <div className="mt-2 space-y-1">
-                            <div className="flex justify-between items-center">
-                                <p className="text-white text-sm">Original Price:</p>
-                                <p className="text-white line-through text-sm">${w.originalPrice}</p>
+                            <div className="space-y-2">
+                                <h1 className="text-xl font-bold text-white">{w.title}</h1>
+                                <p className="text-white text-sm">
+                                    <span className="font-semibold text-gray-300">Proposed by:</span>
+                                    <div className="flex gap-2 mb-2">
+                                        <img
+                                            src={`https://api.dicebear.com/9.x/pixel-art/svg?seed=${w.worker}`}
+                                            alt="profile picture"
+                                            className="size-8 rounded-full"
+                                        />
+                                        <div className="mb-3">
+                                            <h2 className="text-sm font-semibold text-gray-300">{w.worker.slice(0, -15)}...</h2>
+                                            <div className="flex">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Image
+                                                        key={i}
+                                                        src="/star-2.svg"
+                                                        alt="star icon"
+                                                        width={10}
+                                                        height={10}
+                                                        className="mr-1"
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p>
+                                <div className="mt-2 space-y-1">
+                                <div className="flex justify-between items-center">
+                                    <p className="text-white text-sm">Original Price:</p>
+                                    <p className="text-white line-through text-sm">${w.originalPrice}</p>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <p className="text-white text-sm">Proposed Price:</p>
+                                    <p className="text-ut-orange font-semibold text-sm">${w.proposedPrice}</p>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <p className="text-white text-sm">Original Timeline:</p>
+                                    <p className="text-white line-through text-sm">{w.originalTimeline}</p>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <p className="text-white text-sm">Proposed Timeline:</p>
+                                    <p className="text-ut-orange font-semibold text-sm">{w.proposedTimeline}</p>
+                                </div>
+                                </div>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <p className="text-white text-sm">Proposed Price:</p>
-                                <p className="text-ut-orange font-semibold text-sm">${w.proposedPrice}</p>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <p className="text-white text-sm">Original Timeline:</p>
-                                <p className="text-white line-through text-sm">{w.originalTimeline}</p>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <p className="text-white text-sm">Proposed Timeline:</p>
-                                <p className="text-ut-orange font-semibold text-sm">{w.proposedTimeline}</p>
-                            </div>
-                            </div>
-                        </div>
 
-                        <div className="flex gap-2">
-                            <button
-                            className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition"
-                            onClick={() => {/* Accept logic */}}
-                            >
-                            Accept
-                            </button>
-                            <button
-                            className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition"
-                            onClick={() => {/* Decline logic */}}
-                            >
-                            Decline
-                            </button>
-                            <button
-                            className="flex-1 rounded-lg py-2 text-sm font-semibold bg-ut-orange hover:scale-105 transition"
-                            onClick={() => {/* Navigate to original gig */}}
-                            >
-                            View Work
-                            </button>
-                        </div>
+                            <div className="flex gap-2">
+                                <button
+                                className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition"
+                                onClick={() => {/* Accept logic */}}
+                                >
+                                Accept
+                                </button>
+                                <button
+                                className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition"
+                                onClick={() => {/* Decline logic */}}
+                                >
+                                Decline
+                                </button>
+                                <button
+                                className="flex-1 rounded-lg py-2 text-sm font-semibold bg-ut-orange hover:scale-105 transition"
+                                onClick={() => {/* Navigate to original gig */}}
+                                >
+                                View Work
+                                </button>
+                            </div>
                         </div>
                     ))
                     }
