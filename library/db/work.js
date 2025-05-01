@@ -151,24 +151,24 @@ export async function updateProposalStatus(jobId, proposerWallet, status) {
   if (!jobSnap.exists()) {
     throw new Error("Job not found");
   }
-  
+
   const jobData = jobSnap.data();
-  if (!jobData.proposals || !Array.isArray(jobData.proposals)) {
-    throw new Error("Invalid job data: proposals array not found");
-  }
+  const proposals = jobData.proposals || [];
   
-  const proposals = jobData.proposals.map(proposal => {
+  const updatedProposals = proposals.map(proposal => {
     if (proposal.proposerWallet === proposerWallet) {
-      return { 
-        ...proposal, 
+      return {
+        ...proposal,
         status,
-        timestamp: status === "rejected" ? new Date() : proposal.timestamp
+        paymentDate: status === "accepted" ? Math.floor(Date.now() / 1000) + (proposal.proposedTimeline * 24 * 60 * 60) : null
       };
     }
     return proposal;
   });
-  
-  await updateDoc(jobRef, { proposals });
+
+  await updateDoc(jobRef, {
+    proposals: updatedProposals
+  });
 }
 
 export async function fetchCompletedRequests(address) {

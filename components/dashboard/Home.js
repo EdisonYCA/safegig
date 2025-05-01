@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { getWorkRequests, getJobRequests, updateProposalStatus } from "@/library/db/work";
 import { useActiveAccount } from "thirdweb/react";
 import { useRouter } from "next/router";
-
+import { ethers } from "ethers";
 export default function Home() {
   const [activeButton, setActiveButton] = useState(0);
   const [workRequests, setWorkRequests] = useState([]);
@@ -67,6 +67,45 @@ export default function Home() {
       console.error('Error declining proposal:', error);
     }
   };
+
+  const handleAccept = async (proposerWallet, price, timeline, id) => {
+    const worker = account.address;
+    const bnbUsdRate = await getBNBPrice();
+    
+    // Ensure price calculation is correct and formatted properly
+    let bnbPrice = (parseFloat(price) / bnbUsdRate).toFixed(18);
+
+    // Parse the price into wei with proper handling
+    try {
+      const weiPrice = ethers.parseEther(bnbPrice.toString()); // Ensure it's passed as a string
+      const paymentDateMs = Date.now() + timeline * 24 * 60 * 60 * 1000; 
+      const paymentDate = Math.floor(paymentDateMs / 1000);
+      
+      // Update the work request status to accepted and store payment date
+      await updateProposalStatus(id, proposerWallet, "accepted");
+      const updatedWorkRequests = await getWorkRequests(account.address);
+      setWorkRequests(updatedWorkRequests);
+
+      console.log('Job accepted, wei price:', weiPrice.toString());
+    } catch (error) {
+      console.error('Error accepting proposal:', error);
+    }
+};
+
+  const getRemainingDays = (paymentDate) => {
+    const now = Math.floor(Date.now() / 1000);
+    const diffInSeconds = paymentDate - now;
+    const diffInDays = Math.ceil(diffInSeconds / (24 * 60 * 60));
+    return diffInDays;
+  };
+
+  async function getBNBPrice() {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd');
+    const data = await response.json();
+    const bnbUsdRate = data.binancecoin.usd; 
+    console.log(`1 BNB = $${bnbUsdRate}`);
+    return bnbUsdRate;
+  }
 
   return (
     <>
@@ -163,16 +202,29 @@ export default function Home() {
                 </div>
                 {activeButton === 0 ? (
                   <div className="flex gap-2">
-                    <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition">
-                      Accept
-                    </button>
-                    <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition"
-                      onClick={() => handleDecline(w.id, w.proposerWallet)}>
-                      Decline
-                    </button>
-                    <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-ut-orange hover:scale-105 transition">
-                      View Work
-                    </button>
+                    {w.status === "accepted" ? (
+                      <div className="w-full text-center">
+                        <span className="px-4 py-2 rounded-lg text-white font-semibold bg-selective-yellow">
+                          Work in progress: {getRemainingDays(w.paymentDate)} days left
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        <button 
+                          onClick={() => handleAccept(w.proposerWallet, w.proposedPrice, w.proposedTimeline, w.id)}
+                          className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition">
+                          Accept
+                        </button>
+                        <button 
+                          onClick={() => handleDecline(w.id, w.proposerWallet)}
+                          className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition">
+                          Decline
+                        </button>
+                        <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-ut-orange hover:scale-105 transition">
+                          View Work
+                        </button>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <div className="flex justify-center">
