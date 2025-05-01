@@ -62,9 +62,7 @@ const CompletedRequests = () => {
                     </div>
                 ))
             ) : (
-                <div className="text-white/60 text-sm text-center py-4">
-                    No rejected proposals found
-                </div>
+                <p className="text-white/80">No rejected/completed requests</p>
             )}
         </div>
     );

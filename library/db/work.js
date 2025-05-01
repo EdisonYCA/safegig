@@ -24,8 +24,6 @@ export async function registerUserFb(address) {
             wallet: address,
             rating: 0,
             postedWork: [],
-            postedJobs: [],
-            pendingWork: [],
             pendingJob: []
           });
         }
@@ -91,13 +89,15 @@ export async function getWorkRequests(address) {
     const jobSnap = await getDoc(jobRef);
     if (jobSnap.exists() && jobSnap.data().proposals.length > 0) {
       const jobData = jobSnap.data();
-      const proposalsWithJobInfo = jobData.proposals.map(proposal => ({
-        ...proposal,
-        title: jobData.title,
-        originalPrice: jobData.price,
-        originalTimeline: jobData.timeline,
-        id: jobId
-      }));
+      const proposalsWithJobInfo = jobData.proposals
+        .filter(proposal => proposal.status !== "rejected")
+        .map(proposal => ({
+          ...proposal,
+          title: jobData.title,
+          originalPrice: jobData.price,
+          originalTimeline: jobData.timeline,
+          id: jobId
+        }));
       workRequests.push(...proposalsWithJobInfo);
     }
   }

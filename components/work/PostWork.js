@@ -29,8 +29,6 @@ export default function PostWork(){
             const jobId = await postWork(account.address, formData.payment, formData.timeline,
                 formData.title, formData.description
             );
-
-            console.log(jobId);
             
             await updatePostedWork(jobId, account.address);
 

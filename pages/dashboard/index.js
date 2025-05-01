@@ -42,7 +42,7 @@ export default function Dashboard() {
             {renderContent()}
             <div className="col-start-9 col-span-2 row-start-3 row-span-14 grid grid-rows-2 gap-2">
                 <div className="bg-prussian-blue rounded-lg shadow-md p-4 flex flex-col">
-                    <h3 className="text-lg font-semibold mb-2 text-white">Active Requests</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-white">Active</h3>
                     <div className="overflow-y-auto flex-1">
                         <ActiveRequests />
                     </div>
