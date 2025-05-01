@@ -25,21 +25,29 @@ export async function registerUserFb(address) {
             rating: 0,
             postedWork: [],
             postedJobs: [],
+            pendingWork: [],
+            pendingJob: []
           });
         }
 }
 
 export async function updateProposals(jobId, address, price, timeline, message) {
   const jobRef = doc(db, "work", jobId);
-            await updateDoc(jobRef, {
-                proposals: arrayUnion({
-                    proposerWallet: address,
-                    proposedPrice: price,
-                    proposedTimeline: timeline,
-                    message: message,
-                    submittedAt: new Date().toISOString()
-                })
-            });
+    await updateDoc(jobRef, {
+        proposals: arrayUnion({
+            proposerWallet: address,
+            proposedPrice: price,
+            proposedTimeline: timeline,
+            message: message,
+            submittedAt: new Date().toISOString()
+        })
+    });
 }
 
-    
+
+export async function updatePendingWork(jobId, address) {
+  const userRef = doc(db, "users", address);
+    await updateDoc(userRef, {
+        pendingWork: arrayUnion(jobId)
+  });
+}

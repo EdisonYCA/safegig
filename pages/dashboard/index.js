@@ -5,10 +5,15 @@ import ActionButtons from "@/components/dashboard/ActionButtons"
 import Jobs from "@/components/work/Jobs"
 import Gigs from "@/components/work/Gigs"
 import { useStateContext } from "@/context/StateContext"
+import { useRouter } from "next/router";
+import { useEffect } from "react"
+import { useActiveAccount } from "thirdweb/react"
 
 
 export default function Dashboard() {
     const {content} = useStateContext();
+    const account = useActiveAccount();
+    const router = useRouter();
 
     const renderContent = () => {
         if (content == "Home") {
@@ -19,6 +24,10 @@ export default function Dashboard() {
             return <Gigs/>
         }
     }
+
+    // useEffect(() => {
+    //     if (!account) {router.push("/")}
+    // }, [account])
 
     return (
         <>

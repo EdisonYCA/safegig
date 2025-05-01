@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { useState } from "react";
-import { updateProposals } from "@/library/db/work";
-import { useStateContext } from "@/context/StateContext";
+import { updatePendingWork, updateProposals } from "@/library/db/work";
 import { useActiveAccount } from "thirdweb/react";
+import { useRouter } from "next/router";
 
 
 export default function JobDetailModal({ job, onClose }) {
@@ -15,8 +15,8 @@ export default function JobDetailModal({ job, onClose }) {
 
     const handleSubmit = async () => {
         try {
-            console.log(account)
             await updateProposals(job.id, account.address, price, timeline, message);
+            await updatePendingWork(job.id, account.address);
     
             setShowForm(false);
             setShowConfirmation(true);
