@@ -122,7 +122,7 @@ export async function getJobRequests(address) {
     if (jobSnap.exists()) {
       const jobData = jobSnap.data();
       const proposal = jobData.proposals.find(p => p.proposerWallet === address);
-      if (proposal) {
+      if (proposal && proposal.status !== "rejected") {
         jobRequests.push({
           id: jobId,
           title: jobData.title,
@@ -159,10 +159,46 @@ export async function updateProposalStatus(jobId, proposerWallet, status) {
   
   const proposals = jobData.proposals.map(proposal => {
     if (proposal.proposerWallet === proposerWallet) {
-      return { ...proposal, status };
+      return { 
+        ...proposal, 
+        status,
+        timestamp: status === "rejected" ? new Date() : proposal.timestamp
+      };
     }
     return proposal;
   });
   
   await updateDoc(jobRef, { proposals });
+}
+
+export async function fetchCompletedRequests(address) {
+  const docRef = doc(db, 'users', address);
+  const docSnap = await getDoc(docRef);
+  if (!docSnap.exists()) {
+    return [];
+  }
+  const pendingJobs = docSnap.data().pendingJob;
+  if (pendingJobs.length === 0) {
+    return [];
+  }
+  const completedRequests = [];
+  for (const jobId of pendingJobs) {
+    const jobRef = doc(db, 'work', jobId);
+    const jobSnap = await getDoc(jobRef);
+    if (jobSnap.exists()) {
+      const jobData = jobSnap.data();
+      const proposal = jobData.proposals.find(p => p.proposerWallet === address);
+      if (proposal && proposal.status === "rejected") {
+        completedRequests.push({
+          id: jobId,
+          title: jobData.title,
+          client: jobData.client,
+          status: "Rejected",
+          profit: "-$" + proposal.proposedPrice,
+          date: new Date(proposal.timestamp?.toDate()).toLocaleDateString()
+        });
+      }
+    }
+  }
+  return completedRequests;
 }
