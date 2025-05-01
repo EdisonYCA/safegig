@@ -122,7 +122,7 @@ export async function getJobRequests(address) {
     if (jobSnap.exists()) {
       const jobData = jobSnap.data();
       const proposal = jobData.proposals.find(p => p.proposerWallet === address);
-      if (proposal && proposal.status !== "rejected") {
+      if (proposal) {
         jobRequests.push({
           id: jobId,
           title: jobData.title,
@@ -132,7 +132,8 @@ export async function getJobRequests(address) {
           originalTimeline: jobData.timeline,
           proposedTimeline: proposal.proposedTimeline,
           message: proposal.message,
-          status: proposal.status
+          status: proposal.status,
+          paymentDate: proposal.paymentDate ? proposal.paymentDate : null
         });
       }
     }
@@ -160,7 +161,39 @@ export async function updateProposalStatus(jobId, proposerWallet, status) {
       return {
         ...proposal,
         status,
+        acceptedOn: status === "accepted" ? Math.floor(Date.now() / 1000) : null,
         paymentDate: status === "accepted" ? Math.floor(Date.now() / 1000) + (proposal.proposedTimeline * 24 * 60 * 60) : null
+      };
+    }
+    return proposal;
+  });
+
+  await updateDoc(jobRef, {
+    proposals: updatedProposals
+  });
+}
+
+export async function completeJob(jobId, proposerWallet) {
+  if (!jobId || !proposerWallet) {
+    throw new Error("Missing required parameters: jobId and proposerWallet are required");
+  }
+
+  const jobRef = doc(db, "work", jobId);
+  const jobSnap = await getDoc(jobRef);
+  
+  if (!jobSnap.exists()) {
+    throw new Error("Job not found");
+  }
+
+  const jobData = jobSnap.data();
+  const proposals = jobData.proposals || [];
+  
+  const updatedProposals = proposals.map(proposal => {
+    if (proposal.proposerWallet === proposerWallet) {
+      return {
+        ...proposal,
+        status: "completed",
+        completedOn: Math.floor(Date.now() / 1000)
       };
     }
     return proposal;
@@ -188,7 +221,7 @@ export async function fetchCompletedRequests(address) {
     if (jobSnap.exists()) {
       const jobData = jobSnap.data();
       const proposal = jobData.proposals.find(p => p.proposerWallet === address);
-      if (proposal && proposal.status === "rejected") {
+      if (proposal && proposal.status === "rejected" || proposal.status === "completed") {
         completedRequests.push({
           id: jobId,
           title: jobData.title,

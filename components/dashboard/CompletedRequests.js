@@ -33,6 +33,7 @@ const CompletedRequests = () => {
             {completedRequests.length > 0 ? (
                 completedRequests.map((request) => (
                     <div key={request.id} className="bg-white/10 p-3 rounded-lg shadow-sm border border-white/20">
+                        {console.log(request)}
                         <div className="flex justify-between items-start">
                             <h4 className="font-medium text-sm text-white max-w-[70%] truncate" title={request.title}>
                                 {truncateText(request.title, 20)}
@@ -54,9 +55,9 @@ const CompletedRequests = () => {
                             </p>
                         </div>
                         <div className="flex justify-between items-center mt-2">
-                            <span className="text-xs text-white/80">Rejected: {request.date}</span>
+                            <span className="text-xs text-white/80">Completed On: {request.date}</span>
                             <span className={`text-sm font-semibold ${getProfitColor(request.profit)}`}>
-                                {request.profit}
+                                {request.status === "Completed" ? `+${request.profit}` : request.profit}
                             </span>
                         </div>
                     </div>

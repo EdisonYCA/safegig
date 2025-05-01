@@ -24,7 +24,7 @@ export default function Home() {
         const workRequests = await getWorkRequests(account.address);
         const jobRequests = await getJobRequests(account.address);
         setWorkRequests(workRequests);
-        setJobRequests(jobRequests);
+        setJobRequests(jobRequests.filter(request => request.status === "pending"));
       } catch (error) {
         console.error('Error fetching data:', error);
         setWorkRequests([]);
