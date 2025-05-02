@@ -7,10 +7,10 @@ export function StateContext({ children }) {
     const [user, setUser] = useState(null);
     const [workRequests, setWorkRequests] = useState([]);
     const [jobRequests, setJobRequests] = useState([]);
-  
+    const [completedRejectedJobs, setCompletedRejectedJobs] = useState([]);
     
     return (
-        <Context.Provider value={{ content, setContent, user, setUser, workRequests, setWorkRequests, jobRequests, setJobRequests }}>
+        <Context.Provider value={{ content, setContent, user, setUser, workRequests, setWorkRequests, jobRequests, setJobRequests, completedRejectedJobs, setCompletedRejectedJobs }}>
             {children}
         </Context.Provider>
     );

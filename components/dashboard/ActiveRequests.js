@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getJobRequests, completeJob, getPendingJobs, updatePendingJobsStatus } from "@/library/db/work";
 import { useActiveAccount } from "thirdweb/react";
-
+import { useStateContext } from '@/context/StateContext';
+import { fetchCompletedRequests } from '@/library/db/work';
 const ActiveRequests = () => {
     const [activeRequests, setActiveRequests] = useState([]);
+    const { setCompletedRejectedJobs } = useStateContext();
     const account = useActiveAccount();
 
     useEffect(() => {
@@ -23,18 +25,22 @@ const ActiveRequests = () => {
         fetchActiveRequests();
     }, [account]);
 
-    const handleCollect = async (jobId, proposalId) => {
+    const handleCollect = async (jobId) => {
         try {
             // Update the job status in the work document
             await completeJob(jobId, account.address);
             
             // Update the status in the worker's pendingJobs
-            await updatePendingJobsStatus(jobId, proposalId, account.address, "completed");
+            await updatePendingJobsStatus(jobId, account.address, "completed");
             
-            // Refresh the active requests
+            // Refresh the active requests by fetching all job requests and filtering for accepted ones
             const jobRequests = await getJobRequests(account.address);
             const acceptedJobs = jobRequests.filter(job => job.status === "accepted");
             setActiveRequests(acceptedJobs);
+
+            // Refresh completed/rejected jobs
+            const completedRequests = await fetchCompletedRequests(account?.address);
+            setCompletedRejectedJobs(completedRequests);
         } catch (error) {
             console.error('Error completing job:', error);
         }
@@ -99,7 +105,7 @@ const ActiveRequests = () => {
                                     <button 
                                         className={`text-xs px-2 py-1 rounded-full text-white ${remainingDays === 0 ? 'bg-ut-orange' : 'bg-gray-500 cursor-not-allowed'}`}
                                         disabled={remainingDays !== 0}
-                                        onClick={() => handleCollect(request.id, request.proposalId)}
+                                        onClick={() => handleCollect(request.id)}
                                     >
                                         Collect
                                     </button>

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { fetchCompletedRequests } from '@/library/db/work';
 import { useActiveAccount } from 'thirdweb/react';
+import { useStateContext } from '@/context/StateContext';
 
 const CompletedRequests = () => {
-    const [completedRequests, setCompletedRequests] = useState([]);
     const account = useActiveAccount();
-
+    const { completedRejectedJobs, setCompletedRejectedJobs } = useStateContext();
     useEffect(() => {
         if (account === undefined) return;
         const fetchData = async () => {
             const completedRequests = await fetchCompletedRequests(account?.address);
-            setCompletedRequests(completedRequests);
+            setCompletedRejectedJobs(completedRequests);
         }
         fetchData();
     }, [account]);
@@ -30,8 +30,8 @@ const CompletedRequests = () => {
 
     return (
         <div className="space-y-4">
-            {completedRequests.length > 0 ? (
-                completedRequests.map((request) => (
+            {completedRejectedJobs.length > 0 ? (
+                completedRejectedJobs.map((request) => (
                     <div key={request.id} className="bg-white/10 p-3 rounded-lg shadow-sm border border-white/20">
                         {console.log(request)}
                         <div className="flex justify-between items-start">
@@ -57,7 +57,7 @@ const CompletedRequests = () => {
                         <div className="flex justify-between items-center mt-2">
                             <span className="text-xs text-white/80">{request.status === "Completed" ? `Completed On: ${request.date}` : `Rejected On: ${request.date}`}</span>
                             <span className={`text-sm font-semibold ${getProfitColor(request.profit)}`}>
-                                {request.status === "Completed" ? `+${request.profit}` : request.profit}
+                                {request.status === "Completed" ? `${request.profit}` : request.profit}
                             </span>
                         </div>
                     </div>
