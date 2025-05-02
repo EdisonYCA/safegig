@@ -261,7 +261,7 @@ export async function addProposalToPendingJobs(jobId, address, proposalData) {
   });
 }
 
-export async function updatePendingJobsStatus(jobId, address, status) {
+export async function updatePendingJobsStatus(jobId, address, status, contractAddress = null) {
   const userRef = doc(db, "users", address);
   const userSnap = await getDoc(userRef);
   
@@ -276,10 +276,16 @@ export async function updatePendingJobsStatus(jobId, address, status) {
     throw new Error("No proposal found for this job");
   }
 
-  await updateDoc(userRef, {
+  const updateData = {
     [`pendingJobs.${jobId}.status`]: status,
     [`pendingJobs.${jobId}.date`]: Math.floor(Date.now() / 1000)
-  });
+  };
+
+  if (contractAddress) {
+    updateData[`pendingJobs.${jobId}.contractId`] = contractAddress;
+  }
+
+  await updateDoc(userRef, updateData);
 }
 
 export async function getPendingJobs(address) {

@@ -5,6 +5,9 @@ import { useActiveAccount } from "thirdweb/react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import { useStateContext } from "@/context/StateContext";
+import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { client } from "@/library/thirdwebClient";
+
 
 export default function Home() {
   const [activeButton, setActiveButton] = useState(0);
@@ -79,26 +82,35 @@ export default function Home() {
     }
   };
 
-  const handleAccept = async (proposerWallet, price, timeline, id) => {
+  const handleAccept = async (client, price, timeline, id) => {
     try {
       setLoadingStates(prev => ({ ...prev, [`accept-${id}`]: true }));
-      
-      const worker = account.address;
-      const bnbUsdRate = await getBNBPrice();
-      
-      // Ensure price calculation is correct and formatted properly
-      let bnbPrice = (parseFloat(price) / bnbUsdRate).toFixed(18);
 
-      // Parse the price into wei with proper handling
+      /* Create a new job contract */
+      const bnbUsdRate = await getBNBPrice();
+      let bnbPrice = (parseFloat(price) / bnbUsdRate).toFixed(18);
       const weiPrice = ethers.parseEther(bnbPrice.toString());
-      const paymentDateMs = Date.now() + timeline * 24 * 60 * 60 * 1000; 
+      const paymentDateMs = Date.now() + timeline * 24 * 60 * 60 * 1000;
       const paymentDate = Math.floor(paymentDateMs / 1000);
+      console.log(paymentDate)
+
+      // Create SDK instance
+      const sdk = new ThirdwebSDK("bsc-testnet", {
+        client,
+      });
+
+      // Deploy the contract
+      const contractAddress = await sdk.deployer.deployContract({
+        contract: "Job",
+        constructorParams: [client, paymentDate, weiPrice],
+        value: weiPrice
+      });
       
       // Update the work request status to accepted
-      await updateProposalStatus(id, proposerWallet, "accepted");
+      await updateProposalStatus(id, client, "accepted");
       
-      // Update the status in the client's pendingJobs
-      await updatePendingJobsStatus(id, proposerWallet, "accepted");
+      // Update the status in the client's pendingJobs with the contract address
+      await updatePendingJobsStatus(id, client, "accepted", contractAddress);
 
       // Refresh the data
       const updatedWorkRequests = await getWorkRequests(account.address);
