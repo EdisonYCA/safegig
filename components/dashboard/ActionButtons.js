@@ -3,23 +3,23 @@ import Image from "next/image"
 
 export default function ActionButtons(){
     const actionBtns = [
-        { name: 'FREELANCE JOBS',icon: null, href: '#', colors: "bg-sky-blue text-prussian-blue", css: "col-span-2" },
-        { name: 'FULL-TIME JOBS', icon: null, href: '#', colors: "bg-blue-green text-white", css: "col-span-2" },
-        { name: 'CATALOGS', icon: null, href: '#', colors: "bg-prussian-blue text-white", css: "col-span-2" },
-        { name: 'POST GIG', icon: "/48-s-add.svg", href: '#', colors: "bg-selective-yellow text-prussian-blue", css: "col-span-2" },
+        { name: 'Home', icon: "/home-3.svg", href: '#', colors: "bg-white text-black col-span-4" },
+        { name: 'Find Work',icon: null, href: '#', colors: "bg-blue-green text-white col-span-4" },
+        { name: 'Post Work', icon: null, href: '#', colors: "bg-selective-yellow text-prussian-blue col-span-2"},
     ]
     
     const {setContent} = useStateContext();
 
     return (
         <>
+        {/* <div className="col-span-full flex gap-2 rounded-lg row-span-2 p-4"> */}
         {/* action buttons */}
         {actionBtns.map((btn) => (
-                <div key={btn.name} className={`row-span-1 flex justify-center ${btn.css}`}>
                     <button
                         onClick={() => (setContent(btn.name))}
+                        key={btn.name}
                         className={
-                            `rounded-lg flex justify-center items-center w-full h-full shadow-md hover:scale-101 hover:shadow-lg transition-shadow duration-200 ${btn.colors}`
+                            `row-span-2 rounded-lg flex justify-center text-lg items-center shadow-md hover:scale-101 hover:shadow-lg transition-shadow duration-200 ${btn.colors}`
                         }                       
                         >
                         {btn.icon ? (
@@ -33,8 +33,9 @@ export default function ActionButtons(){
                         ) : null}
                         <span>{btn.name}</span>
                     </button>
-                </div>
+                // </div>
             ))}
+        {/* </div> */}
         </>
     );
 }

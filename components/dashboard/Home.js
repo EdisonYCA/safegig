@@ -1,120 +1,301 @@
 import Image from "next/image";
+import { useState, useEffect } from "react";
+import { getWorkRequests, getJobRequests, updateProposalStatus, getPendingJobs, updatePendingJobsStatus } from "@/library/db/work";
+import { useActiveAccount } from "thirdweb/react";
+import { useRouter } from "next/router";
+import { ethers } from "ethers";
+import { useStateContext } from "@/context/StateContext";
+import { client } from "@/library/thirdwebClient";
+import { deployContract } from "thirdweb/deploys";
+import { defineChain } from "thirdweb/chains";
+import { abi, bytecode } from "@/contracts/Job";
+
 
 export default function Home() {
-    const gigBtns = [
-        { name: 'ACTIVE GIGS', current: true },
-        { name: 'COMPLETED GIGS', current: false },
-    ]
+  const [activeButton, setActiveButton] = useState(0);
+  const [loadingStates, setLoadingStates] = useState({});
+  const { workRequests, setWorkRequests, jobRequests, setJobRequests } = useStateContext();
+  const account = useActiveAccount();
+  const router = useRouter();
 
-    const gigs = [
-        {
-        name: "Web Design",
-        description: "I will create a modern and responsive web design tailored to your needs.",
-        price: "$1500",
-        current: true,
-        },
-        {
-        name: "Logo Creation",
-        description: "Get a unique and professional logo to represent your brand.",
-        price: "$300",
-        current: false,
-        },
-        {
-        name: "SEO Optimization",
-        description: "Boost your site's ranking with advanced SEO techniques.",
-        price: "$800",
-        current: false,
-        },
-        {
-        name: "App UI/UX",
-        description: "I’ll design a sleek and user-friendly mobile app interface.",
-        price: "$1200",
-        current: false,
-        },
-        {
-        name: "Landing Page",
-        description: "Custom landing page optimized for conversions and mobile.",
-        price: "$950",
-        current: false,
-        },
-        {
-        name: "E-commerce Setup",
-        description: "Complete online store setup with payment integration.",
-        price: "$2000",
-        current: false,
-        },
-    ];
+  useEffect(() => {
+    if (account === undefined) {return;}
 
-    return (
-        <>
-        {/* gigs */}
-        <div className="col-span-6 row-start-2 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3 shadow-md">
-                <div className="flex w-full h-[13%] rounded-lg bg-gray-200 p-1 shadow-sm gap-1">
-                    {
-                        gigBtns.map((btn) => (
-                            <button
-                              key={btn.name}
-                              className={`h-full w-1/2 rounded-lg transition-all duration-200 ease-in-out
-                                ${btn.current
-                                  ? "bg-prussian-blue text-white shadow-sm"
-                                  : "text-prussian-blue hover:white hover:shadow-md"}`}
-                            >
-                              {btn.name}
-                            </button>
-                          ))
-                    }
-                </div>
+    if (!account) {
+      router.push('/');
+      return;
+    }
 
-                {/* Gig Content */}
-                {
-                    gigs.slice(0, 4).map((gig) => (
-                        <div className="w-full rounded-lg bg-gray-200 shadow-sm p-4 flex flex-col gap-1 border border-gray-200">
-                            <h2 className="text-md font-semibold text-prussian-blue">{gig.name}</h2>
-                            <p className="text-gray-700">{gig.description}</p>
-                            <div className="text-lg font-bold text-orange-600">{gig.price}</div>
-                        </div>
-                    ))
-                }
+    const fetchData = async () => {
+      try {
+        const workRequests = await getWorkRequests(account.address);
+        const jobRequests = await getJobRequests(account.address);
+        setWorkRequests(workRequests);
+        setJobRequests(jobRequests.filter(request => request.status === "pending"));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setWorkRequests([]);
+        setJobRequests([]);
+      }
+    };
+    
+    fetchData();
+  }, [account]);
+
+  const gigBtns = [
+    { name: "Work Requests", id: 0 },
+    { name: "Job Requests", id: 1 },
+  ];
+
+  const getActiveData = () => {
+    return activeButton === 0 ? workRequests : jobRequests;
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'accepted':
+        return 'bg-green-500';
+      case 'rejected':
+        return 'bg-red-500';
+      default:
+        return 'bg-yellow-500';
+    }
+  };
+
+  const handleDecline = async (jobId, proposerWallet) => {
+    try {
+      setLoadingStates(prev => ({ ...prev, [`decline-${jobId}`]: true }));
+      
+      // Update the proposal status in the work document
+      await updateProposalStatus(jobId, proposerWallet, "rejected");
+      
+      // Update the status in the client's pendingJobs
+      await updatePendingJobsStatus(jobId, proposerWallet, "rejected");
+
+      // Refresh the data
+      const updatedWorkRequests = await getWorkRequests(account.address);
+      const jobRequests = await getJobRequests(account.address);
+      setWorkRequests(updatedWorkRequests);
+      setJobRequests(jobRequests);
+    } catch (error) {
+      console.error('Error declining proposal:', error);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [`decline-${jobId}`]: false }));
+    }
+  };
+
+  const deploy = async (proposerWallet, price, paymentDate) => {
+    try {
+      const address = await deployContract({
+        client: client,
+        account: account,
+        chain: defineChain(97),
+        bytecode: bytecode,
+        abi: abi,
+        constructorParams: {
+          _client: proposerWallet,
+          _paymentDate: paymentDate,
+          _price: price
+        }
+      });
+      
+      return address;
+    } catch (error) {
+      console.error("Deployment failed:", error);
+      return null;
+    }
+  };
+
+  const handleAccept = async (client, price, timeline, id) => {
+    try {
+      setLoadingStates(prev => ({ ...prev, [`accept-${id}`]: true }));
+
+      /* Create a new job contract */
+      const bnbUsdRate = await getBNBPrice();
+      let bnbPrice = (parseFloat(price) / bnbUsdRate).toFixed(18);
+      const weiPrice = ethers.parseEther(bnbPrice.toString());
+      const paymentDateMs = Date.now() + timeline * 24 * 60 * 60 * 1000;
+      const paymentDate = Math.floor(paymentDateMs / 1000);
+      
+      // deploy the contract
+      const contractAddress = await deploy(client, weiPrice, paymentDate);
+      
+      // Update the work request status to accepted
+      await updateProposalStatus(id, client, "accepted");
+      
+      // Update the status in the client's pendingJobs with the contract address
+      await updatePendingJobsStatus(id, client, "accepted", contractAddress);
+
+      // Refresh the data
+      const updatedWorkRequests = await getWorkRequests(account.address);
+      setWorkRequests(updatedWorkRequests);
+
+      console.log('Job accepted, wei price:', weiPrice.toString());
+    } catch (error) {
+      console.error('Error accepting proposal:', error);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [`accept-${id}`]: false }));
+    }
+  };
+
+  const getRemainingDays = (paymentDate) => {
+    const now = Math.floor(Date.now() / 1000);
+    const diffInSeconds = paymentDate - now;
+    const diffInDays = Math.ceil(diffInSeconds / (24 * 60 * 60));
+    return diffInDays;
+  };
+
+  async function getBNBPrice() {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd');
+    const data = await response.json();
+    const bnbUsdRate = data.binancecoin.usd; 
+    console.log(`1 BNB = $${bnbUsdRate}`);
+    return bnbUsdRate;
+  }
+
+  return (
+    <>
+      <div className="col-span-8 row-start-3 bg-gray-200 row-span-full bg-gray-100 rounded-lg flex flex-col p-2 gap-3 shadow-md">
+        {/* Toggle Buttons */}
+        <div className="flex w-full h-[13%] rounded-lg gap-1">
+          {gigBtns.map((btn) => (
+            <button
+              onClick={() => setActiveButton(btn.id)}
+              key={btn.name}
+              className={`h-full w-1/2 text-lg rounded-lg transition-all duration-200 ease-in-out ${
+                activeButton === btn.id
+                  ? "bg-ut-orange text-white shadow-sm"
+                  : "text-prussian-blue hover:white hover:shadow-md"
+              }`}
+            >
+              {btn.name}
+            </button>
+          ))}
+        </div>
+        {/* Work Request & Job Request */}
+        <div className="w-full h-1/2 flex flex-wrap gap-3">
+          {getActiveData().length === 0 ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <p className="text-gray-500 text-lg">
+                {activeButton === 0 ? "You have no work requests" : "You have no job requests"}
+              </p>
             </div>
-            {/* Wallet content */}
-            <div className="col-span-2 row-span-4 bg-gray-100 rounded-lg flex flex-col p-2 gap-2 shadow-md">
-                <div className="w-full h-[15%]">
-                    <h2 className="text-md font-semibold text-prussian-blue">WALLET</h2>
-                </div>
-                <div className="w-full h-1/4 gap-2">
-                    <p className="text-prussian-blue">Estimated Balance: $0.00</p>
-                    <p className="text-prussian-blue">Safe Balance: $0.00</p>
-                </div>
-                <div className="w-full h-1/4 bg-gray-200 rounded-lg flex p-3">
-                    <div className="w-[85%] h-full">
-                    <span className="flex items-center gap-2 text-prussian-blue">
-                        <Image
-                            src="/cloud.svg"
-                            alt="cloud"
-                            width={20}
-                            height={20}
-                        />
-                        <p className="text-sm font-medium">Cloud Wallet</p>
-                    </span>
-                        <p className="text-prussian-blue">0xEDf309C67875</p>
-                    </div>
-                </div>
-                <button className="w-full rounded-lg h-1/4 bg-ut-orange flex items-center p-2 gap-3 hover:opacity-90 transition-all">
-                    <Image
-                        src="/MetaMask_Fox.svg"
-                        alt="Meta Mask Fox"
-                        width={45}
-                        height={45}
-                        className="bg-black rounded-lg"
+          ) : (
+            getActiveData().map((w, i) => (
+              <div
+                key={i}
+                className="w-1/3 bg-prussian-blue rounded-2xl shadow-lg p-5 flex flex-col justify-between space-y-4"
+              >
+                <div className="space-y-2">
+                  <h1 className="text-xl font-bold text-white">{w.title}</h1>
+                  <div className="flex gap-2 mb-3">
+                    <img
+                      src={`https://api.dicebear.com/9.x/pixel-art/svg?seed=${activeButton === 0 ? w.proposerWallet : w.client}`}
+                      alt="profile"
+                      className="size-8 rounded-full"
                     />
-                    <div className="w-full h-full text-left">
-                        <p className="text-prussian-blue font-semibold">Connect Metamask</p>
-                        <p className="text-prussian-blue text-sm">Sync Your Accounts</p>
+                    <div className="mb-3">
+                      <h2 className="text-sm font-semibold text-gray-300">
+                        {activeButton === 0 ? w.proposerWallet.slice(0, -15) : w.client.slice(0, -15)}...
+                      </h2>
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Image
+                            key={i}
+                            src="/star-2.svg"
+                            alt="star"
+                            width={10}
+                            height={10}
+                            className="mr-1"
+                          />
+                        ))}
+                      </div>
                     </div>
-                </button>
-            </div>
-            <div className="col-span-2 row-span-5 bg-gray-100 rounded-lg shadow-md">
-            </div>
-        </>
-    )
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <p className="text-white text-sm">Original Price:</p>
+                      <p className="text-white line-through text-sm">
+                        ${w.originalPrice}
+                      </p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-white text-sm">Proposed Price:</p>
+                      <p className="text-ut-orange font-semibold text-sm">
+                        ${w.proposedPrice}
+                      </p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-white text-sm">Original Timeline:</p>
+                      <p className="text-white line-through text-sm">
+                        {w.originalTimeline}
+                      </p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-white text-sm">Proposed Timeline:</p>
+                      <p className="text-ut-orange font-semibold text-sm">
+                        {w.proposedTimeline}
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-600">
+                      <p className="text-white text-sm font-semibold mb-1">Message:</p>
+                      <p className="text-gray-300 text-sm italic">
+                        "{w.message}"
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {activeButton === 0 ? (
+                  <div className="flex gap-2">
+                    {w.status === "accepted" ? (
+                      <div className="w-full text-center">
+                        <span className="px-4 py-2 rounded-lg text-white font-semibold bg-selective-yellow">
+                          Work in progress: {getRemainingDays(w.paymentDate)} days left
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        <button 
+                          onClick={() => handleAccept(w.proposerWallet, w.proposedPrice, w.proposedTimeline, w.id)}
+                          className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition"
+                          disabled={loadingStates[`accept-${w.id}`]}
+                        >
+                          {loadingStates[`accept-${w.id}`] ? (
+                            <div className="flex justify-center">
+                              <div className="w-4 h-4 border-2 border-white rounded-full animate-spin"></div>
+                            </div>
+                          ) : "Accept"}
+                        </button>
+                        <button 
+                          onClick={() => handleDecline(w.id, w.proposerWallet)}
+                          className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition"
+                          disabled={loadingStates[`decline-${w.id}`]}
+                        >
+                          {loadingStates[`decline-${w.id}`] ? (
+                            <div className="flex justify-center">
+                              <div className="w-4 h-4 border-2 border-white rounded-full animate-spin"></div>
+                            </div>
+                          ) : "Decline"}
+                        </button>
+                        <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-ut-orange hover:scale-105 transition">
+                          View Work
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex justify-center">
+                    <span className={`px-4 py-2 rounded-lg text-white font-semibold ${getStatusColor(w.status)}`}>
+                      {w.status.charAt(0).toUpperCase() + w.status.slice(1)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </>
+  );
 }

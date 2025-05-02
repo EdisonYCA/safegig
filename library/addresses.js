@@ -1,1 +1,0 @@
-export const usersContractAddress="0x97889EF0B1C33236975F56f33704DafCF4C92FC5" 
