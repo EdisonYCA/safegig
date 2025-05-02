@@ -22,24 +22,41 @@ export async function registerUserFb(address) {
       if (!userSnap.exists()) {
           await setDoc(userRef, {
             wallet: address,
-            rating: 0,
             postedWork: [],
-            pendingJob: []
+            pendingJobs: []
           });
         }
 }
 
 export async function updateProposals(jobId, address, price, timeline, message) {
   const jobRef = doc(db, "work", jobId);
-    await updateDoc(jobRef, {
-        proposals: arrayUnion({
-            proposerWallet: address,
-            proposedPrice: price,
-            proposedTimeline: timeline,
-            message: message,
-            status: "pending"
-        })
-    });
+  const jobSnap = await getDoc(jobRef);
+  
+  if (!jobSnap.exists()) {
+    throw new Error("Job not found");
+  }
+
+  const jobData = jobSnap.data();
+  
+  // Add proposal to work document
+  await updateDoc(jobRef, {
+    proposals: arrayUnion({
+      proposerWallet: address,
+      proposedPrice: price,
+      proposedTimeline: timeline,
+      message: message,
+      status: "pending"
+    })
+  });
+
+  // Add proposal to worker's pendingJobs
+  await addProposalToPendingJobs(jobId, address, {
+    originalPrice: jobData.price,
+    proposedPrice: price,
+    originalTimeline: jobData.timeline,
+    proposedTimeline: timeline,
+    status: "pending"
+  });
 }
 
 export async function updatePostedWork(jobId, address) {
@@ -47,15 +64,6 @@ export async function updatePostedWork(jobId, address) {
     await updateDoc(jobRef, {
         postedWork: arrayUnion(jobId)
     });
-}
-
-
-export async function updatePendingWork(jobId, address) {
-  const userRef = doc(db, "users", address);
-    await updateDoc(userRef, {
-        pendingWork: arrayUnion(jobId),
-        pendingJob: arrayUnion(jobId)
-  });
 }
 
 export async function postWork(client, price, timeline, title, description) {
@@ -66,7 +74,6 @@ export async function postWork(client, price, timeline, title, description) {
         timeline: timeline,
         title: title,
         description: description,
-        worker: null,
         proposals: [],
         });
     
@@ -111,31 +118,27 @@ export async function getJobRequests(address) {
   if (!docSnap.exists()) {
     return [];
   }
-  const pendingJobs = docSnap.data().pendingJob;
-  if (pendingJobs.length === 0) {
-    return [];
-  }
+  
+  const pendingJobs = docSnap.data().pendingJobs || {};
   const jobRequests = [];
-  for (const jobId of pendingJobs) {
+  
+  for (const [jobId, proposal] of Object.entries(pendingJobs)) {
     const jobRef = doc(db, 'work', jobId);
     const jobSnap = await getDoc(jobRef);
-    if (jobSnap.exists()) {
+    
+    if (jobSnap.exists() && proposal.status === "pending") {
       const jobData = jobSnap.data();
-      const proposal = jobData.proposals.find(p => p.proposerWallet === address);
-      if (proposal) {
-        jobRequests.push({
-          id: jobId,
-          title: jobData.title,
-          client: jobData.client,
-          originalPrice: jobData.price,
-          proposedPrice: proposal.proposedPrice,
-          originalTimeline: jobData.timeline,
-          proposedTimeline: proposal.proposedTimeline,
-          message: proposal.message,
-          status: proposal.status,
-          paymentDate: proposal.paymentDate ? proposal.paymentDate : null
-        });
-      }
+      jobRequests.push({
+        id: jobId,
+        title: jobData.title,
+        client: jobData.client,
+        originalPrice: proposal.originalPrice,
+        proposedPrice: proposal.proposedPrice,
+        originalTimeline: proposal.originalTimeline,
+        proposedTimeline: proposal.proposedTimeline,
+        status: proposal.status,
+        paymentDate: proposal.paymentDate || null
+      });
     }
   }
   return jobRequests;
@@ -210,28 +213,81 @@ export async function fetchCompletedRequests(address) {
   if (!docSnap.exists()) {
     return [];
   }
-  const pendingJobs = docSnap.data().pendingJob;
-  if (pendingJobs.length === 0) {
-    return [];
-  }
+  
+  const pendingJobs = docSnap.data().pendingJobs || {};
   const completedRequests = [];
-  for (const jobId of pendingJobs) {
+  
+  for (const [jobId, proposal] of Object.entries(pendingJobs)) {
     const jobRef = doc(db, 'work', jobId);
     const jobSnap = await getDoc(jobRef);
-    if (jobSnap.exists()) {
+    
+    if (jobSnap.exists() && (proposal.status === "rejected" || proposal.status === "completed")) {
       const jobData = jobSnap.data();
-      const proposal = jobData.proposals.find(p => p.proposerWallet === address);
-      if (proposal && proposal.status === "rejected" || proposal.status === "completed") {
-        completedRequests.push({
-          id: jobId,
-          title: jobData.title,
-          client: jobData.client,
-          status: "Rejected",
-          profit: "-$" + proposal.proposedPrice,
-          date: new Date(proposal.timestamp?.toDate()).toLocaleDateString()
-        });
-      }
+      completedRequests.push({
+        id: jobId,
+        title: jobData.title,
+        client: jobData.client,
+        status: proposal.status === "rejected" ? "Rejected" : "Completed",
+        profit: proposal.status === "rejected" ? "-$" + proposal.proposedPrice : "+$" + proposal.proposedPrice,
+        date: new Date(proposal.timestamp?.toDate()).toLocaleDateString()
+      });
     }
   }
   return completedRequests;
+}
+
+export async function addProposalToPendingJobs(jobId, address, proposalData) {
+  const userRef = doc(db, "users", address);
+  const userSnap = await getDoc(userRef);
+  
+  if (!userSnap.exists()) {
+    throw new Error("User not found");
+  }
+
+  const userData = userSnap.data();
+  const pendingJobs = userData.pendingJobs || {};
+  
+  // Check if user already has a proposal for this job
+  if (pendingJobs[jobId]) {
+    throw new Error("User already has a proposal for this job");
+  }
+  
+  // Add new proposal to the map
+  await updateDoc(userRef, {
+    [`pendingJobs.${jobId}`]: {
+      ...proposalData,
+      status: "pending"
+    }
+  });
+}
+
+export async function updatePendingJobsStatus(jobId, address, status) {
+  const userRef = doc(db, "users", address);
+  const userSnap = await getDoc(userRef);
+  
+  if (!userSnap.exists()) {
+    throw new Error("User not found");
+  }
+
+  const userData = userSnap.data();
+  const pendingJobs = userData.pendingJobs || {};
+  
+  if (!pendingJobs[jobId]) {
+    throw new Error("No proposal found for this job");
+  }
+
+  await updateDoc(userRef, {
+    [`pendingJobs.${jobId}.status`]: status
+  });
+}
+
+export async function getPendingJobs(address) {
+  const userRef = doc(db, "users", address);
+  const userSnap = await getDoc(userRef);
+  
+  if (!userSnap.exists()) {
+    return {};
+  }
+
+  return userSnap.data().pendingJobs || {};
 }

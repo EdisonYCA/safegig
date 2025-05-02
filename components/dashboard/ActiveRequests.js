@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getJobRequests, completeJob } from "@/library/db/work";
+import { getJobRequests, completeJob, getPendingJobs, updatePendingJobsStatus } from "@/library/db/work";
 import { useActiveAccount } from "thirdweb/react";
 
 const ActiveRequests = () => {
@@ -23,10 +23,15 @@ const ActiveRequests = () => {
         fetchActiveRequests();
     }, [account]);
 
-    const handleCollect = async (jobId) => {
+    const handleCollect = async (jobId, proposalId) => {
         try {
+            // Update the job status in the work document
             await completeJob(jobId, account.address);
-            /* This is where the client calls the collect function from smart contract I guess they should also submit their work here */
+            
+            // Update the status in the worker's pendingJobs
+            await updatePendingJobsStatus(jobId, proposalId, account.address, "completed");
+            
+            // Refresh the active requests
             const jobRequests = await getJobRequests(account.address);
             const acceptedJobs = jobRequests.filter(job => job.status === "accepted");
             setActiveRequests(acceptedJobs);
@@ -94,7 +99,7 @@ const ActiveRequests = () => {
                                     <button 
                                         className={`text-xs px-2 py-1 rounded-full text-white ${remainingDays === 0 ? 'bg-ut-orange' : 'bg-gray-500 cursor-not-allowed'}`}
                                         disabled={remainingDays !== 0}
-                                        onClick={() => handleCollect(request.id)}
+                                        onClick={() => handleCollect(request.id, request.proposalId)}
                                     >
                                         Collect
                                     </button>

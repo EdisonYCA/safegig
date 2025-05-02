@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { getWorkRequests, getJobRequests, updateProposalStatus } from "@/library/db/work";
+import { getWorkRequests, getJobRequests, updateProposalStatus, getPendingJobs, updatePendingJobsStatus } from "@/library/db/work";
 import { useActiveAccount } from "thirdweb/react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
@@ -8,6 +8,7 @@ import { useStateContext } from "@/context/StateContext";
 
 export default function Home() {
   const [activeButton, setActiveButton] = useState(0);
+  const [loadingStates, setLoadingStates] = useState({});
   const { workRequests, setWorkRequests, jobRequests, setJobRequests } = useStateContext();
   const account = useActiveAccount();
   const router = useRouter();
@@ -58,40 +59,58 @@ export default function Home() {
 
   const handleDecline = async (jobId, proposerWallet) => {
     try {
-      console.log(jobId, proposerWallet);
+      setLoadingStates(prev => ({ ...prev, [`decline-${jobId}`]: true }));
+      
+      // Update the proposal status in the work document
       await updateProposalStatus(jobId, proposerWallet, "rejected");
+      
+      // Update the status in the client's pendingJobs
+      await updatePendingJobsStatus(jobId, proposerWallet, "rejected");
+
+      // Refresh the data
       const updatedWorkRequests = await getWorkRequests(account.address);
       const jobRequests = await getJobRequests(account.address);
       setWorkRequests(updatedWorkRequests);
       setJobRequests(jobRequests);
     } catch (error) {
       console.error('Error declining proposal:', error);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [`decline-${jobId}`]: false }));
     }
   };
 
   const handleAccept = async (proposerWallet, price, timeline, id) => {
-    const worker = account.address;
-    const bnbUsdRate = await getBNBPrice();
-    
-    // Ensure price calculation is correct and formatted properly
-    let bnbPrice = (parseFloat(price) / bnbUsdRate).toFixed(18);
-
-    // Parse the price into wei with proper handling
     try {
-      const weiPrice = ethers.parseEther(bnbPrice.toString()); // Ensure it's passed as a string
+      setLoadingStates(prev => ({ ...prev, [`accept-${id}`]: true }));
+      
+      const worker = account.address;
+      const bnbUsdRate = await getBNBPrice();
+      
+      // Ensure price calculation is correct and formatted properly
+      let bnbPrice = (parseFloat(price) / bnbUsdRate).toFixed(18);
+
+      // Parse the price into wei with proper handling
+      const weiPrice = ethers.parseEther(bnbPrice.toString());
       const paymentDateMs = Date.now() + timeline * 24 * 60 * 60 * 1000; 
       const paymentDate = Math.floor(paymentDateMs / 1000);
       
-      // Update the work request status to accepted and store payment date
+      // Update the work request status to accepted
       await updateProposalStatus(id, proposerWallet, "accepted");
+      
+      // Update the status in the client's pendingJobs
+      await updatePendingJobsStatus(id, account.address, "accepted");
+
+      // Refresh the data
       const updatedWorkRequests = await getWorkRequests(account.address);
       setWorkRequests(updatedWorkRequests);
 
       console.log('Job accepted, wei price:', weiPrice.toString());
     } catch (error) {
       console.error('Error accepting proposal:', error);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [`accept-${id}`]: false }));
     }
-};
+  };
 
   const getRemainingDays = (paymentDate) => {
     const now = Math.floor(Date.now() / 1000);
@@ -213,13 +232,25 @@ export default function Home() {
                       <>
                         <button 
                           onClick={() => handleAccept(w.proposerWallet, w.proposedPrice, w.proposedTimeline, w.id)}
-                          className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition">
-                          Accept
+                          className="flex-1 rounded-lg py-2 text-sm font-semibold bg-green-500 hover:scale-105 transition"
+                          disabled={loadingStates[`accept-${w.id}`]}
+                        >
+                          {loadingStates[`accept-${w.id}`] ? (
+                            <div className="flex justify-center">
+                              <div className="w-4 h-4 border-2 border-white rounded-full animate-spin"></div>
+                            </div>
+                          ) : "Accept"}
                         </button>
                         <button 
                           onClick={() => handleDecline(w.id, w.proposerWallet)}
-                          className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition">
-                          Decline
+                          className="flex-1 rounded-lg py-2 text-sm font-semibold bg-red-500 hover:scale-105 transition"
+                          disabled={loadingStates[`decline-${w.id}`]}
+                        >
+                          {loadingStates[`decline-${w.id}`] ? (
+                            <div className="flex justify-center">
+                              <div className="w-4 h-4 border-2 border-white rounded-full animate-spin"></div>
+                            </div>
+                          ) : "Decline"}
                         </button>
                         <button className="flex-1 rounded-lg py-2 text-sm font-semibold bg-ut-orange hover:scale-105 transition">
                           View Work
