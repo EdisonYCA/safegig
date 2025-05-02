@@ -4,10 +4,11 @@ import { getWorkRequests, getJobRequests, updateProposalStatus } from "@/library
 import { useActiveAccount } from "thirdweb/react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
+import { useStateContext } from "@/context/StateContext";
+
 export default function Home() {
   const [activeButton, setActiveButton] = useState(0);
-  const [workRequests, setWorkRequests] = useState([]);
-  const [jobRequests, setJobRequests] = useState([]);
+  const { workRequests, setWorkRequests, jobRequests, setJobRequests } = useStateContext();
   const account = useActiveAccount();
   const router = useRouter();
 

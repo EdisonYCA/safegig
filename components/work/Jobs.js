@@ -24,7 +24,7 @@ export default function Jobs(){
       }, []);
 
     return (
-        <div className="row-start-3 col-span-full row-span-full bg-gray-100 rounded-lg p-3 shadow-md gap-3 flex flex-col">
+        <div className="row-start-3 col-span-8 row-span-full bg-gray-100 rounded-lg p-3 shadow-md gap-3 flex flex-col">
             <div className="col-span-full flex justify-center">
                 <div className="w-full flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 shadow-sm">
                     <Image

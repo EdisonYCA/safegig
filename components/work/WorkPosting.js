@@ -11,7 +11,7 @@ export default function WorkPosting({ client, title, description, price, stars, 
                     className="size-8 rounded-full"
                 />
                 <div>
-                    <h2 className="text-sm font-semibold text-white">{client}</h2>
+                    <h2 className="text-sm font-semibold text-white">{client.slice(0, 30)}...</h2>
                     <div className="flex">
                         {[...Array(stars)].map((_, i) => (
                             <Image
@@ -29,7 +29,7 @@ export default function WorkPosting({ client, title, description, price, stars, 
 
             {/* Title and Description */}
             <div className="flex-grow">
-                <h1 className="text-lg font-bold text-white">{title}</h1>
+                <h1 className="text-lg font-bold text-white truncate">{title}</h1>
                 <p className="text-sm text-white line-clamp-5">{description}</p>
             </div>
 
