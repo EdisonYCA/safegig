@@ -98,7 +98,7 @@ export default function Home() {
       await updateProposalStatus(id, proposerWallet, "accepted");
       
       // Update the status in the client's pendingJobs
-      await updatePendingJobsStatus(id, account.address, "accepted");
+      await updatePendingJobsStatus(id, proposerWallet, "accepted");
 
       // Refresh the data
       const updatedWorkRequests = await getWorkRequests(account.address);

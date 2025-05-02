@@ -55,7 +55,7 @@ const CompletedRequests = () => {
                             </p>
                         </div>
                         <div className="flex justify-between items-center mt-2">
-                            <span className="text-xs text-white/80">Completed On: {request.date}</span>
+                            <span className="text-xs text-white/80">{request.status === "Completed" ? `Completed On: ${request.date}` : `Rejected On: ${request.date}`}</span>
                             <span className={`text-sm font-semibold ${getProfitColor(request.profit)}`}>
                                 {request.status === "Completed" ? `+${request.profit}` : request.profit}
                             </span>

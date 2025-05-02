@@ -126,7 +126,7 @@ export async function getJobRequests(address) {
     const jobRef = doc(db, 'work', jobId);
     const jobSnap = await getDoc(jobRef);
     
-    if (jobSnap.exists() && proposal.status === "pending") {
+    if (jobSnap.exists() && (proposal.status === "pending" || proposal.status === "accepted")) {
       const jobData = jobSnap.data();
       jobRequests.push({
         id: jobId,
@@ -229,7 +229,7 @@ export async function fetchCompletedRequests(address) {
         client: jobData.client,
         status: proposal.status === "rejected" ? "Rejected" : "Completed",
         profit: proposal.status === "rejected" ? "-$" + proposal.proposedPrice : "+$" + proposal.proposedPrice,
-        date: new Date(proposal.timestamp?.toDate()).toLocaleDateString()
+        date: new Date(proposal.date * 1000).toLocaleDateString()
       });
     }
   }
@@ -277,7 +277,8 @@ export async function updatePendingJobsStatus(jobId, address, status) {
   }
 
   await updateDoc(userRef, {
-    [`pendingJobs.${jobId}.status`]: status
+    [`pendingJobs.${jobId}.status`]: status,
+    [`pendingJobs.${jobId}.date`]: Math.floor(Date.now() / 1000)
   });
 }
 
