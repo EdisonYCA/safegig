@@ -5,8 +5,10 @@ import { useActiveAccount } from "thirdweb/react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import { useStateContext } from "@/context/StateContext";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { client } from "@/library/thirdwebClient";
+import { deployContract } from "thirdweb/deploys";
+import { defineChain } from "thirdweb/chains";
+import { abi, bytecode } from "@/contracts/Job";
 
 
 export default function Home() {
@@ -82,6 +84,28 @@ export default function Home() {
     }
   };
 
+  const deploy = async (proposerWallet, price, paymentDate) => {
+    try {
+      const address = await deployContract({
+        client: client,
+        account: account,
+        chain: defineChain(97),
+        bytecode: bytecode,
+        abi: abi,
+        constructorParams: {
+          _client: proposerWallet,
+          _paymentDate: paymentDate,
+          _price: price
+        }
+      });
+      
+      return address;
+    } catch (error) {
+      console.error("Deployment failed:", error);
+      return null;
+    }
+  };
+
   const handleAccept = async (client, price, timeline, id) => {
     try {
       setLoadingStates(prev => ({ ...prev, [`accept-${id}`]: true }));
@@ -92,19 +116,9 @@ export default function Home() {
       const weiPrice = ethers.parseEther(bnbPrice.toString());
       const paymentDateMs = Date.now() + timeline * 24 * 60 * 60 * 1000;
       const paymentDate = Math.floor(paymentDateMs / 1000);
-      console.log(paymentDate)
-
-      // Create SDK instance
-      const sdk = new ThirdwebSDK("bsc-testnet", {
-        client,
-      });
-
-      // Deploy the contract
-      const contractAddress = await sdk.deployer.deployContract({
-        contract: "Job",
-        constructorParams: [client, paymentDate, weiPrice],
-        value: weiPrice
-      });
+      
+      // deploy the contract
+      const contractAddress = await deploy(client, weiPrice, paymentDate);
       
       // Update the work request status to accepted
       await updateProposalStatus(id, client, "accepted");

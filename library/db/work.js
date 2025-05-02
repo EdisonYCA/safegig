@@ -298,3 +298,21 @@ export async function getPendingJobs(address) {
 
   return userSnap.data().pendingJobs || {};
 }
+
+export async function getContractAddress(address, jobId) {
+  const userRef = doc(db, "users", address);
+  const userSnap = await getDoc(userRef);
+  
+  if (!userSnap.exists()) {
+    throw new Error("User not found");
+  }
+
+  const userData = userSnap.data();
+  const pendingJobs = userData.pendingJobs || {};
+  
+  if (!pendingJobs[jobId]) {
+    throw new Error("No proposal found for this job");
+  }
+
+  return pendingJobs[jobId].contractId;
+}

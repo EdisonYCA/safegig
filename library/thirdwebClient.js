@@ -1,7 +1,5 @@
 import { createThirdwebClient } from "thirdweb";
-import { createWallet, privateKeyToAccount } from "thirdweb/wallets";
-import { createAuth } from "thirdweb/auth";
-import { deployContract } from "thirdweb/deploys";
+import { createWallet } from "thirdweb/wallets";
 
 const clientId = process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID;
 

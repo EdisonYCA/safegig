@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { getJobRequests, completeJob, getPendingJobs, updatePendingJobsStatus } from "@/library/db/work";
+import { getJobRequests, completeJob, getPendingJobs, updatePendingJobsStatus, getContractAddress } from "@/library/db/work";
 import { useActiveAccount } from "thirdweb/react";
 import { useStateContext } from '@/context/StateContext';
 import { fetchCompletedRequests } from '@/library/db/work';
+import { getContract, defineChain, prepareContractCall, sendTransaction } from "thirdweb";
+import { client } from "@/library/thirdwebClient";
+
 const ActiveRequests = () => {
     const [activeRequests, setActiveRequests] = useState([]);
     const { setCompletedRejectedJobs } = useStateContext();
@@ -25,6 +28,52 @@ const ActiveRequests = () => {
         fetchActiveRequests();
     }, [account]);
 
+    const collectPayment = async (contractAddress) => {
+        let contract = null;
+        let transaction = null;
+
+        try {
+            contract = getContract({
+              client,
+              chain: defineChain(97),
+              address: contractAddress,
+            });
+          } catch (error) {
+            console.error("Failed to get contract instance:", error);
+            alert("Failed to connect to the contract. Please check the address and network.");
+            return;
+          }
+
+          console.log(contract);
+
+          try {
+            transaction = await prepareContractCall({
+              contract,
+              method: "function releasePayment()",
+              params: [],
+            });
+          } catch (error) {
+            console.error("Failed to prepare contract call:", error);
+            alert("Could not prepare the contract call. Please try again later.");
+            return;
+          }
+
+          console.log(transaction);
+
+          try {
+            const { transactionHash } = await sendTransaction({
+              transaction,
+              account,
+            });
+            console.log("Transaction successful! Hash:", transactionHash);
+            alert("Payment collected successfully!");
+          } catch (error) {
+            const message = error?.message || "Unknown error";
+            console.error("Transaction failed:", error);
+            alert("Transaction failed: " + message);
+          }
+    }
+
     const handleCollect = async (jobId) => {
         try {
             // Update the job status in the work document
@@ -32,6 +81,12 @@ const ActiveRequests = () => {
             
             // Update the status in the worker's pendingJobs
             await updatePendingJobsStatus(jobId, account.address, "completed");
+
+            // Get the contract address from pendingJobs
+            const contractAddress = await getContractAddress(account.address, jobId);
+            
+            // collect payment
+            await collectPayment(contractAddress);
             
             // Refresh the active requests by fetching all job requests and filtering for accepted ones
             const jobRequests = await getJobRequests(account.address);
